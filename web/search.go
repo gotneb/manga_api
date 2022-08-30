@@ -36,7 +36,6 @@ func SetupCollect(c *colly.Collector, mangas []*Manga, links *[]string) {
 		if len(number) > 0 {
 			chapters, err := strconv.Atoi(number)
 			if err == nil {
-				// manga.Chapters = chapters
 				manga.Chapters = chapters
 			}
 		}
@@ -71,12 +70,19 @@ func Search(mangaName string) (links []string) {
 		fmt.Println("Visiting", r.URL)
 	})
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		defaultAdress := "https://meusmangas.net/manga/mango/"
+		defAdresses := [2]string{
+			"https://meusmangas.net/manga/mango/",
+			"https://meusmangas.net/manga/hd/",
+		}
 		url := e.Attr("href")
-		if strings.Contains(url, defaultAdress) {
+		//fmt.Printf("All <a> founds: %s\n", url)
+		if strings.Contains(url, defAdresses[0]) {
 			url = url[7:strings.Index(url, "&")]
 			links = append(links, url)
-			fmt.Println("Found: " + url)
+			//fmt.Println("Found: " + url)
+		} else if strings.Contains(url, defAdresses[1]) {
+			url = url[7:strings.Index(url, "&")]
+			links = append(links, url)
 		}
 	})
 	c.Visit(staticLink)
