@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -126,19 +127,32 @@ func Search(mangaName string) (links []string) {
 	return
 }
 
-func FetchImagesByName(name string, chapter int) {
-	const notAllowedSymbols = "!@#$%&"
+func FetchImagesByName(name string, chapter int) (pages []string) {
+	const notAllowedSymbols = ":!@#$%&"
 	const static = "https://img.meusmangas.net//image"
-	// From: "Huge: Stupid Large    NAME" to "huge-stupid-large-name"
-	req := strings.ReplaceAll(strings.ToLower(name), " ", "-")
+
+	/*
+	 * Formats manga name to another one whose website is able to reach
+	 * Example: From: "Huge: Stupid Large    NAME" to "huge-stupid-large-name"
+	 */
+	nameFormated := strings.ReplaceAll(strings.ToLower(name), " ", "-")
 	for _, symbol := range notAllowedSymbols {
-		if strings.Contains(req, string(symbol)) {
-			req = strings.ReplaceAll(req, string(symbol), "")
+		if strings.Contains(nameFormated, string(symbol)) {
+			nameFormated = strings.ReplaceAll(nameFormated, string(symbol), "")
 		}
 	}
-	req = fmt.Sprintf("%s/%s/%d/1.jpg", static, req, chapter)
-	fmt.Printf("%s\nLooking for images...\n", UselessLine())
-	fmt.Println(req)
+
+	i := 1
+	req := fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, i)
+	resp, _ := http.Get(req)
+	for resp.StatusCode == http.StatusOK {
+		pages = append(pages, req)
+		i++
+		req = fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, i)
+		resp, _ = http.Get(req)
+	}
+	defer resp.Body.Close()
+	return
 }
 
 func UselessLine() string {

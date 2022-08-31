@@ -24,7 +24,11 @@ func main() {
 	var n int
 	fmt.Printf("Numero do capitulo: ")
 	fmt.Scanf("%d", &n)
-	web.FetchImagesByName(mangas[0].Title, n)
+	fmt.Println("Looking pages...")
+	pages := web.FetchImagesByName(mangas[0].Title, n)
+	for _, p := range pages {
+		fmt.Println(p)
+	}
 }
 
 // Dummy functions only to execute (also dymmy) tests
