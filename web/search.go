@@ -8,8 +8,10 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func SetupCollect(c *colly.Collector, mangas []*Manga, links *[]string) {
-	manga := &Manga{}
+func SetupCollect(links *[]string) (mangas []Manga) {
+	c := colly.NewCollector()
+
+	manga := Manga{}
 	manga.Chapters = make(map[float64]string)
 	page := 1
 
@@ -19,19 +21,27 @@ func SetupCollect(c *colly.Collector, mangas []*Manga, links *[]string) {
 	})
 	// Fetch manga sinopse
 	c.OnHTML("div.sinopse-page", func(e *colly.HTMLElement) {
-		manga.Description = e.Text
+		if desc := e.Text; len(desc) > 1 {
+			manga.Description = desc
+		}
 	})
 	// Fetch description manga
 	c.OnHTML("img.hGq41", func(e *colly.HTMLElement) {
-		manga.Thumbnail = e.Attr("src")
+		if thumb := e.Attr("src"); len(thumb) > 1 {
+			manga.Thumbnail = thumb
+		}
 	})
 	// Fetch title manga
 	c.OnHTML("h1.kw-title", func(e *colly.HTMLElement) {
-		manga.Title = e.Text
+		if title := e.Text; len(title) > 1 {
+			manga.Title = e.Text
+		}
 	})
 	// Fetch tags manga
 	c.OnHTML("a.widget-btn", func(e *colly.HTMLElement) {
-		manga.Tags = append(manga.Tags, e.Text)
+		if tag := e.Text; len(tag) > 1 {
+			manga.Tags = append(manga.Tags, tag)
+		}
 	})
 	// Fetch total chapters
 	c.OnHTML("div.jVBw-infos > span", func(e *colly.HTMLElement) {
@@ -45,19 +55,23 @@ func SetupCollect(c *colly.Collector, mangas []*Manga, links *[]string) {
 	})
 	// Fetch manga situation
 	c.OnHTML("div.jVBw-infos span.mdq", func(e *colly.HTMLElement) {
-		manga.Situation = e.Text
+		if sit := e.Text; len(sit) > 1 {
+			manga.Situation = e.Text
+		}
 	})
 	// Fetch manga author
 	c.OnHTML("div.jVBw-infos div", func(e *colly.HTMLElement) {
-		manga.Author = e.Text
+		if aut := e.Text; len(aut) > 1 {
+			manga.Author = e.Text
+		}
 	})
 	// Fetch chapters avaliable to read
 	c.OnHTML("a.link-dark", func(e *colly.HTMLElement) {
-		if len(e.Attr("title")) > 0 {
-			chTitle := strings.Split(e.Attr("title"), " ")[2] // e.Attr("") returns "ler capitulo N"
+		if len(e.Attr("title")) > 1 {
+			// e.Attr("") returns "ler capitulo N"
+			chTitle := strings.Split(e.Attr("title"), " ")[2]
 			chNumber, _ := strconv.ParseFloat(chTitle, 32)
 			manga.Chapters[chNumber] = e.Attr("href")
-			fmt.Printf("n: %.1f\nlink: %s\n", chNumber, manga.Chapters[chNumber])
 		}
 	})
 	// Visit all manga pages
@@ -70,17 +84,20 @@ func SetupCollect(c *colly.Collector, mangas []*Manga, links *[]string) {
 	})
 	// Finished
 	c.OnScraped(func(r *colly.Response) {
-		//manga.Show()
-		mangas = append(mangas, manga)
-		// Clear data for a new search :D
-		manga = new(Manga)
-		manga.Chapters = make(map[float64]string)
-		page = 1
+		if manga.Title != "" {
+			// manga.Show()
+			mangas = append(mangas, manga)
+			// Clear data for a new search :D
+			manga = Manga{}
+			manga.Chapters = make(map[float64]string)
+			page = 1
+		}
 	})
 
 	for _, link := range *links {
 		c.Visit(link)
 	}
+	return
 }
 
 // Searches a manga on google and returns a slice of matching results
@@ -107,4 +124,23 @@ func Search(mangaName string) (links []string) {
 
 	c.Visit(staticLink)
 	return
+}
+
+func FetchImagesByName(name string, chapter int) {
+	const notAllowedSymbols = "!@#$%&"
+	const static = "https://img.meusmangas.net//image"
+	// From: "Huge: Stupid Large    NAME" to "huge-stupid-large-name"
+	req := strings.ReplaceAll(strings.ToLower(name), " ", "-")
+	for _, symbol := range notAllowedSymbols {
+		if strings.Contains(req, string(symbol)) {
+			req = strings.ReplaceAll(req, string(symbol), "")
+		}
+	}
+	req = fmt.Sprintf("%s/%s/%d/1.jpg", static, req, chapter)
+	fmt.Printf("%s\nLooking for images...\n", UselessLine())
+	fmt.Println(req)
+}
+
+func UselessLine() string {
+	return "==================================================="
 }

@@ -4,14 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gocolly/colly"
 	"github.com/gotneb/manga_api/web"
 )
 
 func main() {
-	var mangas []*web.Manga
-	c := colly.NewCollector()
-
 	// Dummy data read, it'll only be useful for very small tests
 	var nome string
 	fmt.Print("Digite o nome do manga: ")
@@ -19,8 +15,16 @@ func main() {
 	nome = format(nome)
 	// ---------------------------------------------------------
 	links := web.Search(nome)
+	mangas := web.SetupCollect(&links)
+	fmt.Printf("%s\nMANGAS\n%s\n", web.UselessLine(), web.UselessLine())
+	for _, m := range mangas {
+		fmt.Println(m.Title)
+	}
 
-	web.SetupCollect(c, mangas, &links)
+	var n int
+	fmt.Printf("Numero do capitulo: ")
+	fmt.Scanf("%d", &n)
+	web.FetchImagesByName(mangas[0].Title, n)
 }
 
 // Dummy functions only to execute (also dymmy) tests
