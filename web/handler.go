@@ -18,7 +18,6 @@ func FetchMangaData(link string) (Manga, error) {
 	var errorPage error = nil
 	manga := Manga{}
 	collectData := true
-	//manga.Chapters = make(map[float64]string)
 	page := 1
 
 	// Entering on a site

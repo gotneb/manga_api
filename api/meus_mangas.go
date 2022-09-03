@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -49,5 +50,10 @@ func Init() {
 		}
 	})
 
-	r.Run()
+	// Heroku
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "8080"
+	}
+	r.Run(":" + port)
 }
