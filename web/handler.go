@@ -1,7 +1,9 @@
 package web
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -9,16 +11,28 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func SetupCollect(links *[]string) (mangas []Manga) {
+// Returns a manga which have all information about it
+func FetchMangaData(link string) (Manga, error) {
 	c := colly.NewCollector()
 
+	var errorPage error = nil
 	manga := Manga{}
 	manga.Chapters = make(map[float64]string)
 	page := 1
 
-	// Entering on site
+	// Entering on a site
 	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL)
+		const defaultPage = "comienzo"
+		fmt.Println(r.URL.String())
+		if strings.Contains(r.URL.String(), defaultPage) {
+			errorPage = errors.New("data not found")
+			fmt.Println("Error detected!!")
+		}
+	})
+	// Detect errors on page
+	c.OnError(func(_ *colly.Response, err error) {
+		errorPage = err
+		log.Println("Something went wrong:", err)
 	})
 	// Fetch manga sinopse
 	c.OnHTML("div.sinopse-page", func(e *colly.HTMLElement) {
@@ -77,32 +91,25 @@ func SetupCollect(links *[]string) (mangas []Manga) {
 	})
 	// Visit all manga pages
 	c.OnHTML("ul.content-pagination li a", func(e *colly.HTMLElement) {
-		currPage, _ := strconv.Atoi(e.Text)
-		if currPage == page {
-			page++
-			c.Visit(e.Attr("href"))
+		if errorPage != nil {
+			currPage, _ := strconv.Atoi(e.Text)
+			if currPage == page {
+				page++
+				c.Visit(e.Attr("href"))
+			}
 		}
 	})
-	// Finished
-	c.OnScraped(func(r *colly.Response) {
-		if manga.Title != "" {
-			// manga.Show()
-			mangas = append(mangas, manga)
-			// Clear data for a new search :D
-			manga = Manga{}
-			manga.Chapters = make(map[float64]string)
-			page = 1
-		}
-	})
+	c.Visit(link)
 
-	for _, link := range *links {
-		c.Visit(link)
+	if manga.IsEmpty() {
+		errorPage = errors.New("data not found")
 	}
-	return
+
+	return manga, errorPage
 }
 
 // Searches a manga on google and returns a slice of matching results
-func Search(mangaName string) (links []string) {
+func Search(mangaName string) (links []string, err error) {
 	c := colly.NewCollector()
 	lookFor := mangaName + "+meus+mangas"
 	staticLink := "https://www.google.com/search?q=" + lookFor
@@ -122,15 +129,17 @@ func Search(mangaName string) (links []string) {
 			links = append(links, url)
 		}
 	})
-
 	c.Visit(staticLink)
+	if len(links) == 0 {
+		err = errors.New("manga not found")
+	}
 	return
 }
 
-func FetchImagesByName(name string, chapter int) (pages []string) {
+// Returns all manga pages from a chapter
+func FetchImagesByName(name string, chapter int) (pages []string, err error) {
 	const notAllowedSymbols = ":!@#$%&"
 	const static = "https://img.meusmangas.net//image"
-
 	/*
 	 * Formats manga name to another one whose website is able to reach
 	 * Example: From: "Huge: Stupid Large    NAME" to "huge-stupid-large-name"
@@ -141,17 +150,24 @@ func FetchImagesByName(name string, chapter int) (pages []string) {
 			nameFormated = strings.ReplaceAll(nameFormated, string(symbol), "")
 		}
 	}
-
+	// Visits first page
 	i := 1
 	req := fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, i)
-	resp, _ := http.Get(req)
+	resp, er := http.Get(req)
+	err = er
+	// Returns with the error
+	if er != nil {
+		return
+	}
+	// If ok, visits the remain of pages
+	defer resp.Body.Close()
 	for resp.StatusCode == http.StatusOK {
 		pages = append(pages, req)
 		i++
 		req = fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, i)
-		resp, _ = http.Get(req)
+		log.Println(req)
+		resp, err = http.Get(req)
 	}
-	defer resp.Body.Close()
 	return
 }
 

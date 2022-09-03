@@ -28,3 +28,8 @@ func (m *Manga) Show() {
 	fmt.Println("Description: " + m.Description)
 	// TODO: Show all chapters
 }
+
+// Returns if any field is empty
+func (m *Manga) IsEmpty() bool {
+	return m.Author == "" || len(m.Chapters) == 0 || m.Description == "" || m.Situation == "" || len(m.Tags) == 0 || m.Thumbnail == "" || m.Title == ""
+}
