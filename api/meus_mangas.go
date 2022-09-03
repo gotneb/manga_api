@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -11,10 +12,15 @@ import (
 func Init() {
 	r := gin.Default()
 
+	// A greeting
+	r.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Hey there!")
+	})
+
 	r.GET("/search/:mangaName", func(c *gin.Context) {
-		mangaName := c.Param("mangaName")
-		mangaName = strings.ReplaceAll(mangaName, " ", "+")
-		links, err := web.Search(mangaName)
+		name := c.Param("mangaName")
+		name = strings.ReplaceAll(name, " ", "+")
+		links, err := web.Search(name)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
@@ -27,9 +33,20 @@ func Init() {
 		}
 	})
 
-	r.GET("/user/:name", func(c *gin.Context) {
-		name := c.Param("name")
-		c.String(http.StatusOK, "Hello %s", name)
+	r.GET("/pages/:mangaName/:chapter", func(c *gin.Context) {
+		name := c.Param("mangaName")
+		chapter, err := strconv.Atoi(c.Param("chapter"))
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+		} else {
+			pages, err := web.FetchImagesByName(name, chapter)
+			if err != nil {
+				c.String(http.StatusNotFound, err.Error())
+			} else {
+				c.JSON(http.StatusOK, pages)
+			}
+
+		}
 	})
 
 	r.Run()

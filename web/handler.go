@@ -168,21 +168,38 @@ func FetchImagesByName(name string, chapter int) (pages []string, err error) {
 	resp, er := http.Get(req)
 	err = er
 	// Returns with the error
-	if er != nil {
+	if err != nil || resp.StatusCode != http.StatusOK {
+		err = errors.New("manga doesn't found")
+		return
+	} else {
+		// If ok, visits the remain of pages
+		defer resp.Body.Close()
+		for {
+			i += 10
+			req = fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, i)
+			resp, err = http.Get(req)
+			if resp.StatusCode != http.StatusOK {
+				i -= 9
+				req = fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, i)
+				resp, err = http.Get(req)
+				for resp.StatusCode == http.StatusOK {
+					i++
+					req = fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, i)
+					resp, err = http.Get(req)
+				}
+				break
+			}
+		}
+		//fmt.Printf("%s\nLast chapter: %d\n%s\n", UselessLine(), i, UselessLine())
+		for j := 1; j < i; j++ {
+			pages = append(pages, fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, j))
+		}
 		return
 	}
-	// If ok, visits the remain of pages
-	defer resp.Body.Close()
-	for resp.StatusCode == http.StatusOK {
-		pages = append(pages, req)
-		i++
-		req = fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, i)
-		log.Println(req)
-		resp, err = http.Get(req)
-	}
-	return
 }
 
+/*
 func UselessLine() string {
 	return "==================================================="
 }
+*/
