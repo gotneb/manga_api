@@ -17,7 +17,8 @@ func FetchMangaData(link string) (Manga, error) {
 
 	var errorPage error = nil
 	manga := Manga{}
-	manga.Chapters = make(map[float64]string)
+	collectData := true
+	//manga.Chapters = make(map[float64]string)
 	page := 1
 
 	// Entering on a site
@@ -40,28 +41,28 @@ func FetchMangaData(link string) (Manga, error) {
 			manga.Description = desc
 		}
 	})
-	// Fetch description manga
+	// Fetch manga thumbnail
 	c.OnHTML("img.hGq41", func(e *colly.HTMLElement) {
-		if thumb := e.Attr("src"); len(thumb) > 1 {
+		if thumb := e.Attr("src"); collectData && len(thumb) > 1 {
 			manga.Thumbnail = thumb
 		}
 	})
 	// Fetch title manga
 	c.OnHTML("h1.kw-title", func(e *colly.HTMLElement) {
-		if title := e.Text; len(title) > 1 {
+		if title := e.Text; collectData && len(title) > 1 {
 			manga.Title = e.Text
 		}
 	})
 	// Fetch tags manga
 	c.OnHTML("a.widget-btn", func(e *colly.HTMLElement) {
-		if tag := e.Text; len(tag) > 1 {
+		if tag := e.Text; collectData && len(tag) > 1 {
 			manga.Tags = append(manga.Tags, tag)
 		}
 	})
 	// Fetch total chapters
 	c.OnHTML("div.jVBw-infos > span", func(e *colly.HTMLElement) {
 		number := strings.Split(e.Text, " ")[0]
-		if len(number) > 0 {
+		if collectData && len(number) > 0 {
 			chapters, err := strconv.Atoi(number)
 			if err == nil {
 				manga.TotalChapters = chapters
@@ -70,14 +71,15 @@ func FetchMangaData(link string) (Manga, error) {
 	})
 	// Fetch manga situation
 	c.OnHTML("div.jVBw-infos span.mdq", func(e *colly.HTMLElement) {
-		if sit := e.Text; len(sit) > 1 {
+		if sit := e.Text; collectData && len(sit) > 1 {
 			manga.Situation = e.Text
 		}
 	})
 	// Fetch manga author
 	c.OnHTML("div.jVBw-infos div", func(e *colly.HTMLElement) {
-		if aut := e.Text; len(aut) > 1 {
-			manga.Author = e.Text
+		if aut := e.Text; collectData && len(aut) > 1 {
+			manga.Author = e.Text[1:]
+			manga.Author = strings.TrimSpace(manga.Author)
 		}
 	})
 	// Fetch chapters avaliable to read
@@ -86,15 +88,17 @@ func FetchMangaData(link string) (Manga, error) {
 			// e.Attr("") returns "ler capitulo N"
 			chTitle := strings.Split(e.Attr("title"), " ")[2]
 			chNumber, _ := strconv.ParseFloat(chTitle, 32)
-			manga.Chapters[chNumber] = e.Attr("href")
+			// manga.Chapters[chNumber] = e.Attr("href")
+			manga.Chapters = append(manga.Chapters, float32(chNumber))
 		}
 	})
 	// Visit all manga pages
 	c.OnHTML("ul.content-pagination li a", func(e *colly.HTMLElement) {
-		if errorPage != nil {
+		if errorPage == nil {
 			currPage, _ := strconv.Atoi(e.Text)
 			if currPage == page {
 				page++
+				collectData = false
 				c.Visit(e.Attr("href"))
 			}
 		}
@@ -126,6 +130,14 @@ func Search(mangaName string) (links []string, err error) {
 		url := e.Attr("href")
 		if strings.Contains(url, defAdresses[0]) || strings.Contains(url, defAdresses[1]) {
 			url = url[7:strings.Index(url, "&")]
+			links = append(links, url)
+		} else if uri := "page"; strings.Contains(url, uri) {
+			/*
+			 * For some reason, Google wasn't able to "see" the main page, but it has found the manga PAGE
+			 * So, it'll append the link to the first page
+			 */
+			url = url[7:strings.Index(url, "&")]
+			url = url[:len(url)-1] + "1"
 			links = append(links, url)
 		}
 	})

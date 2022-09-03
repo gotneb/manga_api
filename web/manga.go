@@ -3,14 +3,14 @@ package web
 import "fmt"
 
 type Manga struct {
-	Title         string             `json:"title"`
-	Author        string             `json:"author"`
-	Tags          []string           `json:"tags"`
-	TotalChapters int                `json:"totalChapters"`
-	Description   string             `json:"description"`
-	Thumbnail     string             `json:"thumbnail"`
-	Situation     string             `json:"situation"`
-	Chapters      map[float64]string `json:"chapters"`
+	Title         string    `json:"title"`
+	Author        string    `json:"author"`
+	Thumbnail     string    `json:"thumbnail"`
+	Tags          []string  `json:"tags"`
+	Description   string    `json:"description"`
+	Situation     string    `json:"situation"`
+	TotalChapters int       `json:"totalChapters"`
+	Chapters      []float32 `json:"chapters"`
 }
 
 // Show details about the manga
