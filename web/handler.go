@@ -149,12 +149,17 @@ func Search(mangaName string) (links []string, err error) {
 
 // Returns all manga pages from a chapter
 func FetchImagesByName(name string, chapter int) (pages []string, err error) {
-	const notAllowedSymbols = ":!@#$%&"
+	const notAllowedSymbols = ":!@#$%&()"
 	const static = "https://img.meusmangas.net//image"
 	/*
 	 * Formats manga name to another one whose website is able to reach
 	 * Example: From: "Huge: Stupid Large    NAME" to "huge-stupid-large-name"
 	 */
+	name, err = getMangaTitle(name)
+	if err != nil {
+		return
+	}
+
 	nameFormated := strings.ReplaceAll(strings.ToLower(name), " ", "-")
 	for _, symbol := range notAllowedSymbols {
 		if strings.Contains(nameFormated, string(symbol)) {
@@ -195,6 +200,24 @@ func FetchImagesByName(name string, chapter int) (pages []string, err error) {
 		}
 		return
 	}
+}
+
+func getMangaTitle(name string) (title string, err error) {
+	name = strings.ReplaceAll(name, " ", "+")
+	links, err := Search(name)
+	if err != nil {
+		return
+	}
+	c := colly.NewCollector()
+	link := links[0]
+
+	// Fetch title manga
+	c.OnHTML("h1.kw-title", func(e *colly.HTMLElement) {
+		title = e.Text
+	})
+
+	c.Visit(link)
+	return
 }
 
 /*
