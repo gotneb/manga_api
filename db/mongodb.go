@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/gotneb/manga_api/web"
@@ -53,19 +52,21 @@ func GetManga(title string) (web.Manga, error) {
 	if err != nil {
 		panic(err)
 	}
-
+	log.Println("Connected to the database!")
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
+			log.Println("Disconnected!")
 			panic(err)
 		}
 	}()
 
 	coll := client.Database("manga_api").Collection("meus_mangas")
+	log.Println("Got connection!")
 
 	var result bson.M
 	err = coll.FindOne(context.TODO(), bson.D{{"title", title}}).Decode(&result)
 	if err == mongo.ErrNoDocuments {
-		fmt.Printf("No document was found with the title %s\n", title)
+		log.Println("No document was found with the title", title)
 		return web.Manga{}, err
 	}
 	if err != nil {
@@ -73,10 +74,10 @@ func GetManga(title string) (web.Manga, error) {
 	}
 
 	jsonData, err := json.MarshalIndent(result, "", "    ")
+	log.Println("Got JSON!")
 	if err != nil {
 		panic(err)
 	}
-	//fmt.Printf("Json: %s\n", string(jsonData))
 	var manga web.Manga
 	json.Unmarshal(jsonData, &manga)
 	return manga, nil
