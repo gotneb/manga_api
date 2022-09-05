@@ -81,16 +81,10 @@ func FetchMangaData(link string) (Manga, error) {
 		if len(e.Attr("title")) > 1 {
 			// e.Attr("") returns "ler capitulo N"
 			chTitle := strings.Split(e.Attr("title"), " ")[2]
-			// For unknwon reason, on chapter "0", it isn't showed on the site
+			// For unknown reason, o chapter "0", itself showed on the site
 			if chTitle == "" {
 				chTitle = "0"
 			}
-			/*
-				chNumber, err := strconv.ParseFloat(chTitle, 64)
-				if err != nil {
-					panic(err)
-				}
-			*/
 			manga.Chapters = append(manga.Chapters, chTitle)
 		}
 	})
@@ -198,7 +192,6 @@ func FetchImagesByName(name string, chapter int) (pages []string, err error) {
 				break
 			}
 		}
-		//fmt.Printf("%s\nLast chapter: %d\n%s\n", UselessLine(), i, UselessLine())
 		for j := 1; j < i; j++ {
 			pages = append(pages, fmt.Sprintf("%s/%s/%d/%d.jpg", static, nameFormated, chapter, j))
 		}
@@ -223,9 +216,3 @@ func getMangaTitle(name string) (title string, err error) {
 	c.Visit(link)
 	return
 }
-
-/*
-func UselessLine() string {
-	return "==================================================="
-}
-*/

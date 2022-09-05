@@ -46,7 +46,8 @@ func AddManga(manga *web.Manga) {
 	log.Println("OK: Added with sucess:", manga.Title)
 }
 
-func GetManga(title string) (web.Manga, error) {
+// Returns a specified manga with the given title
+func SeachManga(title string) (manga web.Manga, err error) {
 	log.Println("Searching into the database!")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
 	if err != nil {
@@ -63,22 +64,26 @@ func GetManga(title string) (web.Manga, error) {
 	coll := client.Database("manga_api").Collection("meus_mangas")
 	log.Println("Got connection!")
 
-	var result bson.M
-	err = coll.FindOne(context.TODO(), bson.D{{"title", title}}).Decode(&result)
-	if err == mongo.ErrNoDocuments {
-		log.Println("No document was found with the title", title)
-		return web.Manga{}, err
-	}
+	model := mongo.IndexModel{Keys: bson.D{{"title", "text"}}}
+	_, err = coll.Indexes().CreateOne(context.TODO(), model)
 	if err != nil {
 		panic(err)
 	}
+	filter := bson.D{{"$text", bson.D{{"$search", title}}}}
+	cursor, err := coll.Find(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+	var results []bson.M
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		panic(err)
+	}
 
-	jsonData, err := json.MarshalIndent(result, "", "    ")
+	jsonData, err := json.MarshalIndent(results[0], "", "    ")
 	log.Println("Got JSON!")
 	if err != nil {
 		panic(err)
 	}
-	var manga web.Manga
 	json.Unmarshal(jsonData, &manga)
 	return manga, nil
 }

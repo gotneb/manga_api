@@ -1,14 +1,22 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"strings"
+
 	"github.com/gotneb/manga_api/api"
 	"github.com/gotneb/manga_api/db"
+	"github.com/gotneb/manga_api/web"
 )
 
 func main() {
-	api.Init()
-	/*
-		section := "rst"
+	var option string
+	fmt.Printf("Start web scraping? [S/N]: ")
+	fmt.Scanf("%s", &option)
+
+	if strings.ToLower(string(option[0])) == "s" {
+		section := "abcdefghijklmnopqrstuvwxyz"
 		for _, v := range section {
 			links := web.FetchPages(string(v))
 
@@ -21,6 +29,8 @@ func main() {
 			}
 		}
 		log.Println("DONE!!!!")
-	*/
-	db.GetManga("berserk")
+	} else {
+		fmt.Println("Runing API!")
+		api.Init()
+	}
 }

@@ -14,13 +14,18 @@ func Init() {
 	r := gin.Default()
 
 	// A greeting
-	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hey there!")
+	r.GET("/:name", func(c *gin.Context) {
+		name := c.Param("name")
+		if len(name) == 0 {
+			c.String(http.StatusOK, "Hey there!")
+		} else {
+			c.String(http.StatusOK, "How you doing, "+name+"?")
+		}
 	})
 
 	r.GET("/search/:mangaName", func(c *gin.Context) {
 		name := c.Param("mangaName")
-		manga, err := db.GetManga(name)
+		manga, err := db.SeachManga(name)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
