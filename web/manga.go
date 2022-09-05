@@ -3,14 +3,14 @@ package web
 import "fmt"
 
 type Manga struct {
-	Title         string             `json:"title"`
-	Author        string             `json:"author"`
-	Tags          []string           `json:"tags"`
-	TotalChapters int                `json:"totalChapters"`
-	Description   string             `json:"description"`
-	Thumbnail     string             `json:"thumbnail"`
-	Situation     string             `json:"situation"`
-	Chapters      map[float64]string `json:"chapters"`
+	Title         string   `json:"title"`
+	Author        string   `json:"author"`
+	Thumbnail     string   `json:"thumbnail"`
+	Tags          []string `json:"tags"`
+	Description   string   `json:"description"`
+	Situation     string   `json:"situation"`
+	TotalChapters int      `json:"total_chapters"`
+	Chapters      []string `json:"chapters"`
 }
 
 // Show details about the manga
@@ -31,5 +31,5 @@ func (m *Manga) Show() {
 
 // Returns if any field is empty
 func (m *Manga) IsEmpty() bool {
-	return m.Author == "" || len(m.Chapters) == 0 || m.Description == "" || m.Situation == "" || len(m.Tags) == 0 || m.Thumbnail == "" || m.Title == ""
+	return m.Description == "" || m.Situation == "" || m.Thumbnail == "" || m.Title == ""
 }
