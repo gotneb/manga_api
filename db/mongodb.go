@@ -2,6 +2,8 @@ package db
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/gotneb/manga_api/web"
@@ -43,4 +45,38 @@ func AddManga(manga *web.Manga) {
 		panic(err)
 	}
 	log.Println("OK: Added with sucess:", manga.Title)
+}
+
+func GetManga(title string) (web.Manga, error) {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
+	if err != nil {
+		panic(err)
+	}
+
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+
+	coll := client.Database("manga_api").Collection("meus_mangas")
+
+	var result bson.M
+	err = coll.FindOne(context.TODO(), bson.D{{"title", title}}).Decode(&result)
+	if err == mongo.ErrNoDocuments {
+		fmt.Printf("No document was found with the title %s\n", title)
+		return web.Manga{}, err
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	jsonData, err := json.MarshalIndent(result, "", "    ")
+	if err != nil {
+		panic(err)
+	}
+	//fmt.Printf("Json: %s\n", string(jsonData))
+	var manga web.Manga
+	json.Unmarshal(jsonData, &manga)
+	return manga, nil
 }

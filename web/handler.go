@@ -85,13 +85,13 @@ func FetchMangaData(link string) (Manga, error) {
 			if chTitle == "" {
 				chTitle = "0"
 			}
-			fmt.Println("Parsing " + chTitle)
-			chNumber, err := strconv.ParseFloat(chTitle, 64)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(float64(chNumber))
-			manga.Chapters = append(manga.Chapters, chNumber)
+			/*
+				chNumber, err := strconv.ParseFloat(chTitle, 64)
+				if err != nil {
+					panic(err)
+				}
+			*/
+			manga.Chapters = append(manga.Chapters, chTitle)
 		}
 	})
 	// Visit all manga pages

@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gotneb/manga_api/db"
 	"github.com/gotneb/manga_api/web"
 )
 
@@ -20,17 +20,11 @@ func Init() {
 
 	r.GET("/search/:mangaName", func(c *gin.Context) {
 		name := c.Param("mangaName")
-		name = strings.ReplaceAll(name, " ", "+")
-		links, err := web.Search(name)
+		manga, err := db.GetManga(name)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
-			manga, err := web.FetchMangaData(links[0])
-			if err != nil {
-				c.String(http.StatusNotFound, err.Error())
-			} else {
-				c.JSON(http.StatusOK, manga)
-			}
+			c.JSON(http.StatusOK, manga)
 		}
 	})
 
