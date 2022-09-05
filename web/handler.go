@@ -22,12 +22,7 @@ func FetchMangaData(link string) (Manga, error) {
 
 	// Entering on a site
 	c.OnRequest(func(r *colly.Request) {
-		const defaultPage = "comienzo"
-		fmt.Println(r.URL.String())
-		if strings.Contains(r.URL.String(), defaultPage) {
-			errorPage = errors.New("data not found")
-			fmt.Println("Error detected!!")
-		}
+		log.Println("Visiting:", r.URL)
 	})
 	// Detect errors on page
 	c.OnError(func(_ *colly.Response, err error) {
@@ -86,9 +81,17 @@ func FetchMangaData(link string) (Manga, error) {
 		if len(e.Attr("title")) > 1 {
 			// e.Attr("") returns "ler capitulo N"
 			chTitle := strings.Split(e.Attr("title"), " ")[2]
-			chNumber, _ := strconv.ParseFloat(chTitle, 32)
-			// manga.Chapters[chNumber] = e.Attr("href")
-			manga.Chapters = append(manga.Chapters, float32(chNumber))
+			// For unknwon reason, on chapter "0", it isn't showed on the site
+			if chTitle == "" {
+				chTitle = "0"
+			}
+			fmt.Println("Parsing " + chTitle)
+			chNumber, err := strconv.ParseFloat(chTitle, 64)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(float64(chNumber))
+			manga.Chapters = append(manga.Chapters, chNumber)
 		}
 	})
 	// Visit all manga pages
@@ -96,8 +99,8 @@ func FetchMangaData(link string) (Manga, error) {
 		if errorPage == nil {
 			currPage, _ := strconv.Atoi(e.Text)
 			if currPage == page {
-				page++
 				collectData = false
+				page++
 				c.Visit(e.Attr("href"))
 			}
 		}
@@ -105,7 +108,8 @@ func FetchMangaData(link string) (Manga, error) {
 	c.Visit(link)
 
 	if manga.IsEmpty() {
-		errorPage = errors.New("data not found")
+		manga.Show()
+		panic(errors.New("manga data isn't collected"))
 	}
 
 	return manga, errorPage

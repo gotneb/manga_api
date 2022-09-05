@@ -1,49 +1,75 @@
 package main
 
 import (
-	"github.com/gotneb/manga_api/api"
+	"github.com/gotneb/manga_api/db"
+	"github.com/gotneb/manga_api/web"
 )
 
 func main() {
-	api.Init()
-	/*
-		// Dummy data read, it'll only be useful for very small tests
-		var nome string
-		fmt.Print("Digite o nome do manga: ")
-		fmt.Scanln(&nome)
-		nome = format(nome)
-		// Search a manga
-		links, err := web.Search(nome)
-		if err != nil {
-			panic(err)
-		}
-		// Choose between them
-		opt := 0
-		if len(links) > 1 {
-			fmt.Println("AValiable mangas:")
-			for i, link := range links {
-				fmt.Printf("[%d]: %s\n", i+1, link)
-			}
-			fmt.Printf("Option: ")
-			fmt.Scanf("%d", &opt)
-		}
-		manga, err := web.FetchMangaData(links[opt-1])
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("%s\nMANGAS\n%s\n", web.UselessLine(), web.UselessLine())
-		fmt.Println(manga.Title)
+	section := "abcdefghijklmnopqrstuvwxyz"
+	for _, v := range section {
+		links := web.FetchPages(string(v))
 
-		var n int
-		fmt.Printf("Numero do capitulo: ")
-		fmt.Scanf("%d", &n)
-		fmt.Println("Looking pages...")
-		pages, err := web.FetchImagesByName(manga.Title, n)
+		for _, link := range links {
+			manga, err := web.FetchMangaData(link)
+			if err != nil {
+				panic(err)
+			}
+			db.AddManga(&manga)
+		}
+	}
+	/*
+		if err := godotenv.Load(); err != nil {
+			log.Println("No .env file found")
+		}
+
+		uri := os.Getenv("MONGODB_URI")
+		if uri == "" {
+			log.Fatal("You must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")
+		}
+		client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 		if err != nil {
 			panic(err)
 		}
-		for _, p := range pages {
-			fmt.Println(p)
+
+		defer func() {
+			if err := client.Disconnect(context.TODO()); err != nil {
+				panic(err)
+			}
+		}()
+
+		coll := client.Database("manga_api").Collection("meus_mangas")
+		_, err = coll.InsertOne(
+			context.TODO(),
+			bson.D{
+				{"title", "akame ga kill"},
+				{"total_chapters", 40},
+			},
+		)
+
+		if err != nil {
+			panic(err)
 		}
+		fmt.Println("Sucess!")
+	*/
+	/*
+		===========================================
+		title := "Berserk"
+
+		var result bson.M
+		err = coll.FindOne(context.TODO(), bson.D{{"title", title}}).Decode(&result)
+		if err == mongo.ErrNoDocuments {
+			fmt.Printf("No document was found with the title %s\n", title)
+			return
+		}
+		if err != nil {
+			panic(err)
+		}
+
+		jsonData, err := json.MarshalIndent(result, "", "    ")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%s\n", jsonData)
 	*/
 }
