@@ -48,6 +48,7 @@ func AddManga(manga *web.Manga) {
 }
 
 func GetManga(title string) (web.Manga, error) {
+	log.Println("Searching into the database!")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
 	if err != nil {
 		panic(err)
