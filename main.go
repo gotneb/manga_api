@@ -12,7 +12,49 @@ import (
 )
 
 func main() {
-	// If hospeded heroku, automatically run gin framework
+	uploadMangaPages()
+	/*
+		name := "https://meusmangas.net/manga/hunter-x-hunter/"
+		manga, _ := web.FetchMangaData(name)
+		ch, _ := web.FetchImagesByName(manga.Title, "390")
+		fmt.Printf("Total pages: %d\n", ch.TotalPages)
+	*/
+
+	/*
+		name := "https://meusmangas.net/manga/mango/the-landlords-little-girl"
+		manga, _ := web.FetchMangaData(name)
+		for _, v := range manga.Chapters {
+			ch, _ := web.FetchImagesByName(manga.Title, v)
+			fmt.Printf("Total pages: %d\n\n", ch.TotalPages)
+			//db.AddChapter(&ch)
+		}
+	*/
+}
+
+func uploadMangaPages() {
+	section := "abcdefghijklmnopqrstuvwxyz"
+	for _, v := range section {
+		links := web.FetchPages(string(v))
+
+		for _, link := range links {
+			manga, err := web.FetchMangaData(link)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println("\nStarting upload manga pages from", manga.Title)
+			for _, v := range manga.Chapters {
+				ch, _ := web.FetchImagesByName(manga.Title, v)
+				fmt.Printf("Total pages: %d\n\n", ch.TotalPages)
+				db.AddChapter(&ch)
+			}
+		}
+	}
+	log.Println("DONE!!!!")
+}
+
+// Upload all manga avaliable on website
+func uploadMangaDetails() {
+	// If hosted on heroku, automatically run gin framework
 	port := os.Getenv("PORT")
 	if len(port) == 0 {
 		var option string

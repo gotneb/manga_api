@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const database = "manga_api"
 const keyURI = "mongodb+srv://gotneb:D96jF02VEo5dyQK7@mangahoot-storage-512mb.qtc73bn.mongodb.net/?retryWrites=true&w=majority"
 
 func AddManga(manga *web.Manga) {
@@ -61,7 +62,7 @@ func SeachManga(title string) (manga web.Manga, err error) {
 		}
 	}()
 
-	coll := client.Database("manga_api").Collection("meus_mangas")
+	coll := client.Database(database).Collection("meus_mangas")
 	log.Println("Got connection!")
 
 	model := mongo.IndexModel{Keys: bson.D{{"title", "text"}}}
@@ -86,4 +87,32 @@ func SeachManga(title string) (manga web.Manga, err error) {
 	}
 	json.Unmarshal(jsonData, &manga)
 	return manga, nil
+}
+
+func AddChapter(ch *web.Chapter) {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
+	if err != nil {
+		panic(err)
+	}
+
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+
+	coll := client.Database(database).Collection("meus_mangas_chapters")
+	_, err = coll.InsertOne(
+		context.TODO(),
+		bson.D{
+			{"title", ch.Title},
+			{"value", ch.Value},
+			{"pages", ch.Pages},
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+	log.Println("OK: Added pages with sucess:", ch.Title)
 }

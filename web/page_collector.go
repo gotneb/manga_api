@@ -7,6 +7,8 @@ import (
 	"github.com/gocolly/colly"
 )
 
+// Get all manga links hosted on meus mangas at "section"
+// Section -> "a" to "z"
 func FetchPages(section string) (links []string) {
 	link := "https://meusmangas.net/lista-de-mangas/" + section
 	page := 1

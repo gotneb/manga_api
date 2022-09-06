@@ -1,6 +1,9 @@
 package web
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Manga struct {
 	Title         string   `json:"title"`
@@ -11,6 +14,15 @@ type Manga struct {
 	Situation     string   `json:"situation"`
 	TotalChapters int      `json:"total_chapters"`
 	Chapters      []string `json:"chapters"`
+}
+
+type Chapter struct {
+	Title string `json:"title"`
+	// It's supossed to be a float64, but rarely some chapters are found without a "floating point number"
+	// eg.: Black Cover - 40v01 - o.o
+	Value      string   `json:"value"`
+	TotalPages int      `json:"total_pages"`
+	Pages      []string `json:"pages"`
 }
 
 // Show details about the manga
@@ -32,4 +44,22 @@ func (m *Manga) Show() {
 // Returns if any field is empty
 func (m *Manga) IsEmpty() bool {
 	return m.Description == "" || m.Situation == "" || m.Thumbnail == "" || m.Title == ""
+}
+
+/*
+Formats manga name to another one whose website is able to reach
+Example: From: "Huge: Stupid Large    NAME" to "huge-stupid-large-name"
+*/
+func FormatedTitle(title string) string {
+	const notAllowedSymbols = "’.:!@'\"`~#$%&()[]{}"
+
+	nameFormated := strings.Clone(title)
+	nameFormated = strings.ReplaceAll(strings.ToLower(nameFormated), " ", "-")
+	for _, symbol := range notAllowedSymbols {
+		if strings.Contains(nameFormated, string(symbol)) {
+			nameFormated = strings.ReplaceAll(nameFormated, string(symbol), "")
+		}
+	}
+
+	return nameFormated
 }
