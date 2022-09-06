@@ -12,7 +12,8 @@ import (
 )
 
 func main() {
-	uploadMangaPages()
+	api.Init()
+	//uploadMangaPages()
 	/*
 		name := "https://meusmangas.net/manga/hunter-x-hunter/"
 		manga, _ := web.FetchMangaData(name)
