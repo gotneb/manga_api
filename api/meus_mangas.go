@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	"os"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/gotneb/manga_api/web"
 )
 
-func Init() {
+func Init(f func()) {
 	r := gin.Default()
 
 	// A greeting
@@ -25,6 +26,11 @@ func Init() {
 		} else {
 			c.JSON(http.StatusOK, manga)
 		}
+	})
+
+	r.GET("/manga/upload-pages", func(c *gin.Context) {
+		log.Println("Starting upload")
+		f()
 	})
 
 	r.GET("/manga/pages/:mangaName/:chapter", func(c *gin.Context) {

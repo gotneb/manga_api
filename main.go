@@ -12,8 +12,7 @@ import (
 )
 
 func main() {
-	api.Init()
-	uploadMangaPages()
+	api.Init(UploadMangaPages)
 	/*
 		name := "https://meusmangas.net/manga/hunter-x-hunter/"
 		manga, _ := web.FetchMangaData(name)
@@ -32,7 +31,7 @@ func main() {
 	*/
 }
 
-func uploadMangaPages() {
+func UploadMangaPages() {
 	section := "abcdefghijklmnopqrstuvwxyz"
 	for _, v := range section {
 		links := web.FetchPages(string(v))
@@ -78,9 +77,9 @@ func uploadMangaDetails() {
 			log.Println("DONE!!!!")
 		} else {
 			fmt.Println("Runing API!")
-			api.Init()
+			api.Init(nil)
 		}
 	} else {
-		api.Init()
+		api.Init(nil)
 	}
 }
