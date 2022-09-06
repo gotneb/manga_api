@@ -217,7 +217,7 @@ func FetchImagesByName(name, chapter string) (ch Chapter, err error) {
 	if err != nil {
 		return
 	}
-
+	initialPage := i
 	// Find all manga pages
 	if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusPartialContent {
 		// If ok, visits the remain of pages
@@ -238,7 +238,7 @@ func FetchImagesByName(name, chapter string) (ch Chapter, err error) {
 				break
 			}
 		}
-		for j := 1; j < i; j++ {
+		for j := initialPage; j < i; j++ {
 			ch.Pages = append(ch.Pages, format(j, hasZero))
 		}
 		ch.TotalPages = len(ch.Pages)

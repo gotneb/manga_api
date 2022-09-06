@@ -116,3 +116,12 @@ func AddChapter(ch *web.Chapter) {
 	}
 	log.Println("OK: Added pages with sucess:", ch.Title)
 }
+
+func SearchChapter(name, val string) (web.Chapter, error) {
+	manga, err := SeachManga(name)
+	if err != nil {
+		return web.Chapter{}, err
+	}
+	c, _ := web.FetchImagesByName(manga.Title, val)
+	return c, nil
+}

@@ -12,23 +12,31 @@ import (
 )
 
 func main() {
-	api.Init(UploadMangaPages)
+	api.Init()
 	/*
-		name := "https://meusmangas.net/manga/hunter-x-hunter/"
+		name := "https://meusmangas.net/manga/mango/apotheosis"
 		manga, _ := web.FetchMangaData(name)
-		ch, _ := web.FetchImagesByName(manga.Title, "390")
+		ch, _ := web.FetchImagesByName(manga.Title, "785")
 		fmt.Printf("Total pages: %d\n", ch.TotalPages)
 	*/
 
 	/*
-		name := "https://meusmangas.net/manga/mango/the-landlords-little-girl"
-		manga, _ := web.FetchMangaData(name)
-		for _, v := range manga.Chapters {
-			ch, _ := web.FetchImagesByName(manga.Title, v)
-			fmt.Printf("Total pages: %d\n\n", ch.TotalPages)
-			//db.AddChapter(&ch)
-		}
+		link := "https://meusmangas.net/manga/mango/chainsaw-man"
+		addSimpleManga(link)
 	*/
+}
+
+func addSimpleManga(link string) {
+	manga, _ := web.FetchMangaData(link)
+	for _, v := range manga.Chapters {
+		ch, err := web.FetchImagesByName(manga.Title, v)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("Total pages: %d\n\n", ch.TotalPages)
+		db.AddChapter(&ch)
+	}
+	log.Println("Sucessfully added!")
 }
 
 func UploadMangaPages() {
@@ -43,7 +51,10 @@ func UploadMangaPages() {
 			}
 			fmt.Println("\nStarting upload manga pages from", manga.Title)
 			for _, v := range manga.Chapters {
-				ch, _ := web.FetchImagesByName(manga.Title, v)
+				ch, err := web.FetchImagesByName(manga.Title, v)
+				if err != nil {
+					panic(err)
+				}
 				fmt.Printf("Total pages: %d\n\n", ch.TotalPages)
 				db.AddChapter(&ch)
 			}
@@ -77,9 +88,9 @@ func uploadMangaDetails() {
 			log.Println("DONE!!!!")
 		} else {
 			fmt.Println("Runing API!")
-			api.Init(nil)
+			api.Init()
 		}
 	} else {
-		api.Init(nil)
+		api.Init()
 	}
 }

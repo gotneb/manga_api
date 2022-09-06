@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"os"
 
@@ -10,7 +9,7 @@ import (
 	"github.com/gotneb/manga_api/web"
 )
 
-func Init(f func()) {
+func Init() {
 	r := gin.Default()
 
 	// A greeting
@@ -28,20 +27,14 @@ func Init(f func()) {
 		}
 	})
 
-	r.GET("/manga/upload-pages", func(c *gin.Context) {
-		log.Println("Starting upload")
-		f()
-	})
-
 	r.GET("/manga/pages/:mangaName/:chapter", func(c *gin.Context) {
 		name := c.Param("mangaName")
 		ch := c.Param("chapter")
-		pages, err := web.FetchImagesByName(name, ch)
+		infoCh, err := web.FetchImagesByName(name, ch)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
-		} else {
-			c.JSON(http.StatusOK, pages)
 		}
+		c.JSON(http.StatusOK, infoCh)
 	})
 
 	// Heroku
