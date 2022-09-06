@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gotneb/manga_api/db"
@@ -14,16 +13,11 @@ func Init() {
 	r := gin.Default()
 
 	// A greeting
-	r.GET("/:name", func(c *gin.Context) {
-		name := c.Param("name")
-		if len(name) == 0 {
-			c.String(http.StatusOK, "Hey there!")
-		} else {
-			c.String(http.StatusOK, "How you doing, "+name+"?")
-		}
+	r.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Welcome to my api :] !")
 	})
 
-	r.GET("/search/:mangaName", func(c *gin.Context) {
+	r.GET("/manga/detail/:mangaName", func(c *gin.Context) {
 		name := c.Param("mangaName")
 		manga, err := db.SeachManga(name)
 		if err != nil {
@@ -33,19 +27,14 @@ func Init() {
 		}
 	})
 
-	r.GET("/pages/:mangaName/:chapter", func(c *gin.Context) {
+	r.GET("/manga/pages/:mangaName/:chapter", func(c *gin.Context) {
 		name := c.Param("mangaName")
-		chapter, err := strconv.Atoi(c.Param("chapter"))
+		ch := c.Param("chapter")
+		pages, err := web.FetchImagesByName(name, ch)
 		if err != nil {
-			c.String(http.StatusBadRequest, err.Error())
+			c.String(http.StatusNotFound, err.Error())
 		} else {
-			pages, err := web.FetchImagesByName(name, chapter)
-			if err != nil {
-				c.String(http.StatusNotFound, err.Error())
-			} else {
-				c.JSON(http.StatusOK, pages)
-			}
-
+			c.JSON(http.StatusOK, pages)
 		}
 	})
 
