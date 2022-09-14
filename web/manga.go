@@ -11,7 +11,7 @@ type Manga struct {
 	Thumbnail     string   `json:"thumbnail"`
 	Tags          []string `json:"tags"`
 	Description   string   `json:"description"`
-	Situation     string   `json:"situation"`
+	Status        string   `json:"status"`
 	TotalChapters int      `json:"total_chapters"`
 	Chapters      []string `json:"chapters"`
 }
@@ -29,7 +29,7 @@ type Chapter struct {
 func (m *Manga) Show() {
 	fmt.Println("Title: " + m.Title)
 	fmt.Printf("Author: %s\n", m.Author)
-	fmt.Printf("Situation: %s\n", m.Situation)
+	fmt.Printf("Status: %s\n", m.Status)
 	fmt.Printf("Total chapters: %d\n", m.TotalChapters)
 	fmt.Println("Thumbnail: " + m.Thumbnail)
 	fmt.Printf("Tags: ")
@@ -43,7 +43,7 @@ func (m *Manga) Show() {
 
 // Returns if any field is empty
 func (m *Manga) IsEmpty() bool {
-	return m.Description == "" || m.Situation == "" || m.Thumbnail == "" || m.Title == ""
+	return m.Description == "" || m.Status == "" || m.Thumbnail == "" || m.Title == ""
 }
 
 /*

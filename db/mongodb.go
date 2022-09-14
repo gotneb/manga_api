@@ -35,7 +35,7 @@ func AddManga(manga *web.Manga) {
 			{"thumbnail", manga.Thumbnail},
 			{"tags", manga.Tags},
 			{"description", manga.Description},
-			{"situation", manga.Situation},
+			{"status", manga.Status},
 			{"total_chapters", manga.TotalChapters},
 			{"chapters", manga.Chapters},
 		},

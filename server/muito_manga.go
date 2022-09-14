@@ -52,10 +52,10 @@ func GetMangaDetail(mangaURL string) (manga web.Manga, err error) {
 		const finished = "Finalizado"
 		const ongoing = "Em andamento"
 		if strings.Contains(manga.Author, finished) {
-			manga.Situation = finished
+			manga.Status = finished
 			manga.Author = strings.ReplaceAll(manga.Author, finished, "")
 		} else {
-			manga.Situation = ongoing
+			manga.Status = ongoing
 		}
 	})
 	// Fetch manga chapters

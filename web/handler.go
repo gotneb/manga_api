@@ -72,7 +72,7 @@ func FetchMangaData(link string) (Manga, error) {
 	// Fetch manga situation
 	c.OnHTML("div.jVBw-infos span.mdq", func(e *colly.HTMLElement) {
 		if sit := e.Text; collectData && len(sit) > 1 {
-			manga.Situation = e.Text
+			manga.Status = e.Text
 		}
 	})
 	// Fetch manga author
