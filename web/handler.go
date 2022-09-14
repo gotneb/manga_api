@@ -17,7 +17,10 @@ var ErrPageNotFound = errors.New("manga page not found")
 var ErrWebsiteWithoutContentData = errors.New("manga page null")
 var ErrFirstPageNotFound = errors.New("first page not found")
 
-// Returns a manga which have all information about it
+/*
+Get all details about the manga.
+Link: page link where scrapper can get data
+*/
 func FetchMangaData(link string) (Manga, error) {
 	c := colly.NewCollector()
 
@@ -26,10 +29,6 @@ func FetchMangaData(link string) (Manga, error) {
 	collectData := true
 	page := 1
 
-	// Entering on a site
-	c.OnRequest(func(r *colly.Request) {
-		log.Println("Visiting:", r.URL)
-	})
 	// Detect errors on page
 	c.OnError(func(_ *colly.Response, err error) {
 		errorPage = err
@@ -69,7 +68,7 @@ func FetchMangaData(link string) (Manga, error) {
 			}
 		}
 	})
-	// Fetch manga situation
+	// Fetch manga status. e.g "Em Andamento", "Finalizado"
 	c.OnHTML("div.jVBw-infos span.mdq", func(e *colly.HTMLElement) {
 		if sit := e.Text; collectData && len(sit) > 1 {
 			manga.Status = e.Text
@@ -87,10 +86,11 @@ func FetchMangaData(link string) (Manga, error) {
 		if len(e.Attr("title")) > 1 {
 			// e.Attr("") returns "ler capitulo N"
 			chTitle := strings.Split(e.Attr("title"), " ")[2]
-			// For unknown reason, o chapter "0", itself doens't is showed on the site
+			// For unknown reason, the chapter "0", isn't showed on the site
 			if chTitle == "" {
 				chTitle = "0"
 			}
+			// ==============================================================
 			manga.Chapters = append(manga.Chapters, chTitle)
 		}
 	})
@@ -111,44 +111,8 @@ func FetchMangaData(link string) (Manga, error) {
 		manga.Show()
 		panic(ErrDataNotCollected)
 	}
-
+	manga.TotalChapters = len(manga.Chapters)
 	return manga, errorPage
-}
-
-// Searches a manga on google and returns a slice of matching results
-func Search(mangaName string) (links []string, err error) {
-	c := colly.NewCollector()
-	lookFor := mangaName + "+meus+mangas"
-	staticLink := "https://www.google.com/search?q=" + lookFor
-	// Every time it enters in a website
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL)
-	})
-	// On every <a> whose has "href" attribute
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		defAdresses := [2]string{
-			"https://meusmangas.net/manga/mango/",
-			"https://meusmangas.net/manga/hd/",
-		}
-		url := e.Attr("href")
-		if strings.Contains(url, defAdresses[0]) || strings.Contains(url, defAdresses[1]) {
-			url = url[7:strings.Index(url, "&")]
-			links = append(links, url)
-		} else if uri := "page"; strings.Contains(url, uri) {
-			/*
-			 * For some reason, Google wasn't able to "see" the main page, but it has found the manga PAGE
-			 * So, it'll append the link to the first page
-			 */
-			url = url[7:strings.Index(url, "&")]
-			url = url[:len(url)-1] + "1"
-			links = append(links, url)
-		}
-	})
-	c.Visit(staticLink)
-	if len(links) == 0 {
-		err = ErrMangaNotFound
-	}
-	return
 }
 
 // Returns all manga pages from a chapter
@@ -160,9 +124,13 @@ func FetchImagesByName(name, chapter string) (ch Chapter, err error) {
 	nameFormated := FormatedTitle(name)
 
 	/*
-	 * This function searches the correct page index. Hence this website sometimes give a "jpeg" or "jpg" file
-	 * Or even, weirdly it starts a page with "2" instead "1"
-	 */
+		This is embarrassing, but I was too tired when I wrote this so, it's a messing from here to below (-.-')
+	*/
+
+	/*
+		This function searches the correct page index. Hence this website sometimes give a "jpeg" or "jpg" file
+		Or even, weirdly it starts a page with "2" instead "1"
+	*/
 	findIndex := func(index int) (string, bool, int, error) {
 		resp, _ := http.Get(fmt.Sprintf("%s/%s/%s/%d.jpg", static, nameFormated, chapter, index))
 		if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusPartialContent {
@@ -195,9 +163,9 @@ func FetchImagesByName(name, chapter string) (ch Chapter, err error) {
 		}
 	}
 	/*
-	 * On latest manga upates an url given like that: "01.jpg", "07.jpg" instead of "1.jpg", "7.jpg"
-	 * This function will add zero when it's needed
-	 */
+		On latest manga upates an url is given like that: "01.jpg", "07.jpg" instead of "1.jpg", "7.jpg"
+		This function will add zero when it's needed
+	*/
 	format := func(count int, putZero bool) string {
 		if putZero && count < 10 {
 			return fmt.Sprintf("%s/%s/%s/0%d.%s", static, nameFormated, chapter, count, ext)

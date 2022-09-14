@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"os"
 
 	"github.com/gotneb/manga_api/web"
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,13 +11,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var keyURI = os.Getenv("MONGODB_URI")
-var database = os.Getenv("DATABASE")
-var collection = os.Getenv("COLLECTION")
+var keyURI = "mongodb+srv://gotneb:D96jF02VEo5dyQK7@mangahoot-storage-512mb.qtc73bn.mongodb.net/?retryWrites=true&w=majority"
+var database = "manga_api"
+var collection = "meus_mangas"
 
 /*
 I know it's a bad practice "repeat yourself", but I was too tired so,
-I literally just copied and paste to get a *mango.Client in beginning of in every function.
+I literally just copied and paste to get a *mango.Client in beginning of every function.
 */
 
 func AddManga(manga *web.Manga) {
@@ -51,10 +50,10 @@ func AddManga(manga *web.Manga) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("OK: Added with sucess:", manga.Title)
+	log.Println("OK | Added with sucess:", manga.Title)
 }
 
-// Returns a specified manga with the given title
+// Returns a specified manga with the given title. E.g: "vinland saga"
 func GetManga(title string) (manga web.Manga, err error) {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
 	if err != nil {
@@ -117,12 +116,13 @@ func AddChapter(ch *web.Chapter) {
 	log.Println("OK: Added pages with sucess:", ch.Title)
 }
 
-func SearchChapter(name, val string) (web.Chapter, error) {
-	manga, err := GetManga(name)
+// Returns a manga with given title and chapter number
+func SearchChapter(title, chNumber string) (web.Chapter, error) {
+	manga, err := GetManga(title)
 	if err != nil {
 		return web.Chapter{}, err
 	}
-	c, _ := web.FetchImagesByName(manga.Title, val)
+	c, _ := web.FetchImagesByName(manga.Title, chNumber)
 	return c, nil
 }
 
@@ -162,5 +162,75 @@ func SearchManga(title string) (mangas []web.Manga, err error) {
 		json.Unmarshal(jsonData, &manga)
 		mangas = append(mangas, manga)
 	}
+	return
+}
+
+// Update manga data on database
+func UpdateManga(manga *web.Manga) (err error) {
+	// If do not exists
+	_, err = FindManga(manga.Title)
+	if err != nil {
+		return
+	}
+
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			log.Println("Disconnected!")
+			panic(err)
+		}
+	}()
+	coll := client.Database(database).Collection(collection)
+
+	// Update total_chapters
+	filter := bson.D{{"title", manga.Title}}
+	update := bson.D{{"$set", bson.D{{"total_chapters", manga.TotalChapters}}}}
+	_, err = coll.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return
+	}
+	// Update array chapters
+	_, err = coll.UpdateOne(
+		context.TODO(),
+		bson.D{{"title", manga.Title}},
+		bson.D{{"$set", bson.D{{"chapters", manga.Chapters}}}},
+	)
+	if err != nil {
+		return
+	}
+
+	log.Printf("%s | Updated!", manga.Title)
+	return nil
+}
+
+// Finds by the exactly given manga title on the database
+func FindManga(title string) (manga web.Manga, err error) {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			log.Println("Disconnected!")
+			panic(err)
+		}
+	}()
+
+	coll := client.Database(database).Collection(collection)
+	filter := bson.D{{"$text", bson.D{{"$search", title}}}}
+	var result bson.M
+	err = coll.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		return
+	}
+
+	jsonData, err := json.MarshalIndent(result, "", "    ")
+	if err != nil {
+		return
+	}
+	json.Unmarshal(jsonData, &manga)
 	return
 }
