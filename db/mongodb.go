@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/gotneb/manga_api/server"
 	"github.com/gotneb/manga_api/web"
@@ -12,9 +13,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var keyURI = "mongodb+srv://gotneb:D96jF02VEo5dyQK7@mangahoot-storage-512mb.qtc73bn.mongodb.net/?retryWrites=true&w=majority"
-var database = "manga_api"
-var collection = "meus_mangas"
+var keyURI = os.Getenv("MONGODB_URI")
+var database = os.Getenv("DATABASE")
+var collection = os.Getenv("COLLECTION")
 
 /*
 I know it's a bad practice "repeat yourself", but I was too tired so,
