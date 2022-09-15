@@ -8,7 +8,7 @@ This project actually uses a web scrapping tool to get all manga data.
 
 **API PATH** = [https:/mangahoot.herokuapp.com/](https:/mangahoot.herokuapp.com/) 
 
-## SERVERS
+## Servers
 
 | Option  |  Host  |
 | --- | --- |
