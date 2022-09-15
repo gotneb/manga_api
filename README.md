@@ -1,5 +1,5 @@
-# Manga Api
-Api written with Go using MongoDB :heart: 
+# Mangahoot :coffee:
+A manga api written with Go using MongoDB :heart: 
 
 ##  About
 This project actually uses a web scrapping tool to get all manga data.
