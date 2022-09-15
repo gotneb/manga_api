@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gotneb/manga_api/db"
-	"github.com/gotneb/manga_api/web"
+	"github.com/gotneb/manga_api/server"
 )
 
 func Init() {
@@ -30,7 +30,8 @@ func Init() {
 	r.GET("/manga/pages/:mangaName/:chapter", func(c *gin.Context) {
 		name := c.Param("mangaName")
 		ch := c.Param("chapter")
-		infoCh, err := web.FetchImagesByName(name, ch)
+		//infoCh, err := web.FetchImagesByName(name, ch)
+		infoCh, err := server.GetClient(server.MEUS_MANGAS).GetMangaPages(name, ch)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		}

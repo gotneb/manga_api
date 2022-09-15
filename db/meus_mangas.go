@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/gocolly/colly"
-	"github.com/gotneb/manga_api/web"
+	"github.com/gotneb/manga_api/server"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -39,7 +39,7 @@ func AddAllRecentMangas() {
 	for !stop {
 		links := GetRecentUpdates(i)
 		for _, link := range links {
-			manga, err := web.FetchMangaData(link)
+			manga, err := server.GetClient(server.MEUS_MANGAS).GetMangaDetail(link)
 			if err != nil {
 				panic(err)
 			}

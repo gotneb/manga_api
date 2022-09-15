@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/gotneb/manga_api/server"
 	"github.com/gotneb/manga_api/web"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -122,7 +123,7 @@ func SearchChapter(title, chNumber string) (web.Chapter, error) {
 	if err != nil {
 		return web.Chapter{}, err
 	}
-	c, _ := web.FetchImagesByName(manga.Title, chNumber)
+	c, _ := server.GetClient(server.MEUS_MANGAS).GetMangaPages(manga.Title, chNumber)
 	return c, nil
 }
 

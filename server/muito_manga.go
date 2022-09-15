@@ -11,11 +11,8 @@ import (
 	"github.com/gotneb/manga_api/web"
 )
 
-type MuitoManga struct {
-	PathImage string
-}
+type MuitoManga struct{}
 
-// URL from the site where it's possible get all information about the manga
 func (m *MuitoManga) GetMangaDetail(mangaURL string) (manga web.Manga, err error) {
 	c := colly.NewCollector()
 
@@ -75,7 +72,6 @@ func (m *MuitoManga) GetMangaDetail(mangaURL string) (manga web.Manga, err error
 	return
 }
 
-// Not yet
-func (m *MuitoManga) GetMangaPages(mangaTitle string, chapter int) (ch web.Chapter, err error) {
-	return web.Chapter{}, nil
+func (m *MuitoManga) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, err error) {
+	return web.FetchImagesByName(pathImages[MUITO_MANGA], mangaTitle, chapter)
 }
