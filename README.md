@@ -20,13 +20,13 @@ Returns *one single result* which matches with the name
 ```
 /[server]/manga/detail/[manga name]
 ```
-example: https://mangahoot.herokuapp.com/1/manga/detail/berserk
+example: https://mangahoot.herokuapp.com/0/manga/detail/berserk
 
 ## Chapter Pages
 ```
 /[server]/manga/pages/[name of manga]/[chapter number]
 ```
-example: https://mangahoot.herokuapp.com/1/manga/pages/vinland%20saga/70
+example: https://mangahoot.herokuapp.com/1/manga/pages/one%20punch%20man/70
 
 ## Search Manga
 Returns *many results* which matches with the name
