@@ -3,10 +3,12 @@ package api
 import (
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gotneb/manga_api/db"
 	"github.com/gotneb/manga_api/server"
+	"github.com/gotneb/manga_api/web"
 )
 
 func Init() {
@@ -17,9 +19,27 @@ func Init() {
 		c.String(http.StatusOK, "Welcome to my api :] !")
 	})
 
+	// Some people can have trouble forgeting to include "server" option
 	r.GET("/manga/detail/:mangaName", func(c *gin.Context) {
+		c.String(http.StatusBadRequest, "Request should include server option")
+	})
+
+	r.GET("/:server/manga/detail/:mangaName", func(c *gin.Context) {
+		serv, err := strconv.Atoi(c.Param("server"))
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+		}
+
 		name := c.Param("mangaName")
-		manga, err := db.GetManga(name)
+		var manga web.Manga
+
+		if serv == server.MEUS_MANGAS {
+			manga, err = db.GetManga(name)
+		} else if serv == server.MUITO_MANGA {
+			x := &server.MuitoManga{}
+			manga, err = x.FindManga(name)
+		}
+
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
@@ -27,11 +47,17 @@ func Init() {
 		}
 	})
 
-	r.GET("/manga/pages/:mangaName/:chapter", func(c *gin.Context) {
+	r.GET("/:server/manga/pages/:mangaName/:chapter", func(c *gin.Context) {
+		serv, err := strconv.Atoi(c.Param("server"))
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+		}
+
 		name := c.Param("mangaName")
 		ch := c.Param("chapter")
+
 		//infoCh, err := web.FetchImagesByName(name, ch)
-		infoCh, err := server.GetClient(server.MEUS_MANGAS).GetMangaPages(name, ch)
+		infoCh, err := server.GetClient(serv).GetMangaPages(name, ch)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		}

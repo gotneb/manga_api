@@ -75,3 +75,25 @@ func (m *MuitoManga) GetMangaDetail(mangaURL string) (manga web.Manga, err error
 func (m *MuitoManga) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, err error) {
 	return web.FetchImagesByName(pathImages[MUITO_MANGA], mangaTitle, chapter)
 }
+
+func (m *MuitoManga) FindManga(title string) (manga web.Manga, err error) {
+	c := colly.NewCollector()
+	link := "https://muitomanga.com/buscar?q=" + title
+
+	// Detect errors on page
+	c.OnError(func(_ *colly.Response, err error) {
+		log.Println("Something went wrong:", err)
+	})
+	// Fetch manga title
+	c.OnHTML("div.boxAnimeSobreLast h3 a", func(e *colly.HTMLElement) {
+		if !manga.IsEmpty() {
+			return
+		}
+
+		link := "https://muitomanga.com" + e.Attr("href")
+		manga, err = m.GetMangaDetail(link)
+	})
+
+	c.Visit(link)
+	return
+}
