@@ -8,7 +8,7 @@ This project uses a web scrapping tool to get all manga data.
 
 ## Servers
 
-| Option  |  Host  |  |
+| Server  |  Host  |  |
 | --- | --- | --- |
 |  0 |  https://meusmangas.net/ | :brazil: |
 |  1 |  https://www.mangainn.net/ | :us: |
