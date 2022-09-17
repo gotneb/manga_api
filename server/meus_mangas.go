@@ -41,8 +41,8 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	})
 	// Fetch manga sinopse
 	c.OnHTML("div.sinopse-page", func(e *colly.HTMLElement) {
-		if desc := e.Text; len(desc) > 1 {
-			manga.Description = desc
+		if summ := e.Text; len(summ) > 1 {
+			manga.Summary = summ
 		}
 	})
 	// Fetch manga thumbnail
@@ -59,8 +59,8 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	})
 	// Fetch tags manga
 	c.OnHTML("a.widget-btn", func(e *colly.HTMLElement) {
-		if tag := e.Text; collectData && len(tag) > 1 {
-			manga.Tags = append(manga.Tags, tag)
+		if genre := e.Text; collectData && len(genre) > 1 {
+			manga.Genres = append(manga.Genres, genre)
 		}
 	})
 	// Fetch total chapters

@@ -44,8 +44,8 @@ func (m *Mangainn) GetMangaDetail(mangaURL string) (manga web.Manga, statusCode 
 			manga.Status = e.Text
 		case 2:
 			tagsText := strings.TrimSpace(strings.ReplaceAll(e.Text, " ", ""))
-			tags := strings.Split(tagsText, ",")
-			manga.Tags = tags
+			genres := strings.Split(tagsText, ",")
+			manga.Genres = genres
 		case 4:
 			manga.Author = strings.TrimSpace(e.Text)
 		}
@@ -57,7 +57,7 @@ func (m *Mangainn) GetMangaDetail(mangaURL string) (manga web.Manga, statusCode 
 	})
 	// Fetch manga description
 	c.OnHTML("div.note", func(e *colly.HTMLElement) {
-		manga.Description = e.Text
+		manga.Summary = e.Text
 	})
 	// Fetch manga chapters
 	c.OnHTML("ul.chapter-list li a span.val", func(e *colly.HTMLElement) {
@@ -121,4 +121,8 @@ func (m *Mangainn) FetchAllMangaByLetter(letter string) (links []string) {
 
 	c.Visit(link)
 	return
+}
+
+func (m *Mangainn) UploadAllMangas() {
+
 }
