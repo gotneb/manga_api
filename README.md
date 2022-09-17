@@ -2,18 +2,16 @@
 A manga api written with Go using MongoDB :heart: 
 
 ##  About
-This project actually uses a web scrapping tool to get all manga data.
+This project uses a web scrapping tool to get all manga data.
 
-**Language** : Portuguese :brazil:
-
-**API PATH** = [https:/mangahoot.herokuapp.com/](https:/mangahoot.herokuapp.com/) 
+**API PATH** = [https://mangahoot.herokuapp.com/](https:/mangahoot.herokuapp.com/) 
 
 ## Servers
 
-| Option  |  Host  |
-| --- | --- |
-|  0 |  https://meusmangas.net/ |
-|  1 |  https://muitomanga.com/ |
+| Option  |  Host  |  |
+| --- | --- | --- |
+|  0 |  https://meusmangas.net/ | :brazil: |
+|  1 |  https://www.mangainn.net/ | :us: |
 
 ## Manga Detail
 Returns *one single result* which matches with the name
