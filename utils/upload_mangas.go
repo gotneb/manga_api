@@ -12,9 +12,9 @@ import (
 // UploadAllMangasFrom upload all mangas from specified server and stores into database.
 func UploadAllMangasFrom(server int) {
 	switch server {
-	case serv.MEUS_MANGAS:
+	case db.MEUS_MANGAS:
 		uploadFromMeusMangas()
-	case serv.MANGAINN:
+	case db.MANGAINN:
 		uploadFromMangainn()
 	default:
 		panic(errors.New("server not found"))
@@ -23,7 +23,7 @@ func UploadAllMangasFrom(server int) {
 
 func uploadFromMeusMangas() {
 	alphabet := "abcdefghijklmnopqrstuvwxyz"
-	client := serv.GetClient(serv.MEUS_MANGAS)
+	client := serv.GetClient(db.MEUS_MANGAS)
 
 	for _, letter := range alphabet {
 		links := client.FetchAllMangaByLetter(string(letter))
@@ -32,7 +32,7 @@ func uploadFromMeusMangas() {
 			if stt != http.StatusOK {
 				log.Fatalln("Status:", stt)
 			}
-			db.AddManga(serv.MEUS_MANGAS, &manga)
+			db.AddManga(db.MEUS_MANGAS, &manga)
 		}
 	}
 }

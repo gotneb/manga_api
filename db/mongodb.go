@@ -6,18 +6,23 @@ import (
 	"log"
 	"os"
 
-	"github.com/gotneb/manga_api/server"
 	"github.com/gotneb/manga_api/web"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// It represents a site where manga data will be scraped, and also collections avaliable
+const (
+	MEUS_MANGAS = iota
+	MANGAINN
+)
+
 var keyURI = os.Getenv("MONGODB_URI")
 var database = os.Getenv("DATABASE")
 var collections = map[int]string{
-	server.MEUS_MANGAS: os.Getenv("MEUS_MANGAS_COLL"),
-	server.MANGAINN:    os.Getenv("MANGAINN_COLL"),
+	MEUS_MANGAS: os.Getenv("MEUS_MANGAS_COLL"),
+	MANGAINN:    os.Getenv("MANGAINN_COLL"),
 }
 
 /*

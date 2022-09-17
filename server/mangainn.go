@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly"
+	"github.com/gotneb/manga_api/db"
 	"github.com/gotneb/manga_api/web"
 )
 
@@ -74,7 +75,7 @@ func (m *Mangainn) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, er
 	// Because this site alraedy give the total of pages, I can get all of them without
 	// using this slow function: return web.FetchImagesByName(pathImages[MANGAINN], mangaTitle, chapter)
 	c := colly.NewCollector()
-	path := pathImages[MANGAINN]
+	path := pathImages[db.MANGAINN]
 	fmtTitle := web.FormatedTitle(mangaTitle)
 	link := fmt.Sprintf("%s/%s/%s/all-pages", path, fmtTitle, chapter)
 
@@ -123,6 +124,6 @@ func (m *Mangainn) FetchAllMangaByLetter(letter string) (links []string) {
 	return
 }
 
-func (m *Mangainn) UploadAllMangas() {
-
+func (m *Mangainn) GetManga(mangaTitle string) (manga web.Manga, err error) {
+	return db.GetManga(db.MANGAINN, mangaTitle)
 }

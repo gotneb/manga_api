@@ -18,9 +18,9 @@ and stores it into the database.
 */
 func UploadRecentMangasFrom(server int) {
 	switch server {
-	case serv.MEUS_MANGAS:
+	case db.MEUS_MANGAS:
 		getFromMeusMangas()
-	case serv.MANGAINN:
+	case db.MANGAINN:
 		getFromMangainn()
 	default:
 		panic(errors.New("server not found"))
@@ -53,8 +53,8 @@ func getFromMeusMangas() {
 	stop := false
 	i := 1
 
-	client := serv.GetClient(serv.MEUS_MANGAS)
-	serverCode := serv.MEUS_MANGAS
+	client := serv.GetClient(db.MEUS_MANGAS)
+	serverCode := db.MEUS_MANGAS
 
 	for !stop {
 		links := getRecentUpdates(i)

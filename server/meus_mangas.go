@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly"
+	"github.com/gotneb/manga_api/db"
 	"github.com/gotneb/manga_api/web"
 )
 
@@ -121,7 +122,7 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 }
 
 func (m *MeusMangas) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, err error) {
-	return web.FetchImagesByName(pathImages[MEUS_MANGAS], mangaTitle, chapter)
+	return web.FetchImagesByName(pathImages[db.MEUS_MANGAS], mangaTitle, chapter)
 }
 
 func (m *MeusMangas) FetchAllMangaByLetter(letter string) (links []string) {
@@ -145,4 +146,8 @@ func (m *MeusMangas) FetchAllMangaByLetter(letter string) (links []string) {
 
 	c.Visit(link)
 	return
+}
+
+func (m *MeusMangas) GetManga(mangaTitle string) (manga web.Manga, err error) {
+	return db.GetManga(db.MEUS_MANGAS, mangaTitle)
 }
