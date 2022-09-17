@@ -15,14 +15,17 @@ import (
 
 var keyURI = os.Getenv("MONGODB_URI")
 var database = os.Getenv("DATABASE")
-var collection = os.Getenv("COLLECTION")
+var collections = map[int]string{
+	server.MEUS_MANGAS: os.Getenv("MEUS_MANGAS_COLL"),
+	server.MANGAINN:    os.Getenv("MANGAINN_COLL"),
+}
 
 /*
 I know it's a bad practice "repeat yourself", but I was too tired so,
 I literally just copied and paste to get a *mango.Client in beginning of every function.
 */
 
-func AddManga(manga *web.Manga) {
+func AddManga(server int, manga *web.Manga) {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
 	if err != nil {
 		panic(err)
@@ -34,7 +37,7 @@ func AddManga(manga *web.Manga) {
 		}
 	}()
 
-	coll := client.Database(database).Collection(collection)
+	coll := client.Database(database).Collection(collections[server])
 	_, err = coll.InsertOne(
 		context.TODO(),
 		bson.D{
@@ -56,7 +59,7 @@ func AddManga(manga *web.Manga) {
 }
 
 // Returns a specified manga with the given title. E.g: "vinland saga"
-func GetManga(title string) (manga web.Manga, err error) {
+func GetManga(server int, title string) (manga web.Manga, err error) {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
 	if err != nil {
 		panic(err)
@@ -68,7 +71,7 @@ func GetManga(title string) (manga web.Manga, err error) {
 		}
 	}()
 
-	coll := client.Database(database).Collection(collection)
+	coll := client.Database(database).Collection(collections[server])
 
 	model := mongo.IndexModel{Keys: bson.D{{"title", "text"}}}
 	_, err = coll.Indexes().CreateOne(context.TODO(), model)
@@ -118,18 +121,20 @@ func AddChapter(ch *web.Chapter) {
 	log.Println("OK: Added pages with sucess:", ch.Title)
 }
 
+/*
 // Returns a manga with given title and chapter number
-func SearchChapter(title, chNumber string) (web.Chapter, error) {
-	manga, err := GetManga(title)
+func SearchChapter(serv int, title, chNumber string) (web.Chapter, error) {
+	manga, err := GetManga(serv, title)
 	if err != nil {
 		return web.Chapter{}, err
 	}
 	c, _ := server.GetClient(server.MEUS_MANGAS).GetMangaPages(manga.Title, chNumber)
 	return c, nil
 }
+*/
 
 // Search all mangas with the given title
-func SearchManga(title string) (mangas []web.Manga, err error) {
+func SearchManga(server int, title string) (mangas []web.Manga, err error) {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
 	if err != nil {
 		panic(err)
@@ -141,7 +146,7 @@ func SearchManga(title string) (mangas []web.Manga, err error) {
 		}
 	}()
 
-	coll := client.Database(database).Collection(collection)
+	coll := client.Database(database).Collection(collections[server])
 
 	model := mongo.IndexModel{Keys: bson.D{{"title", "text"}}}
 	_, err = coll.Indexes().CreateOne(context.TODO(), model)
@@ -168,9 +173,9 @@ func SearchManga(title string) (mangas []web.Manga, err error) {
 }
 
 // Update manga data on database
-func UpdateManga(manga *web.Manga) (err error) {
+func UpdateManga(server int, manga *web.Manga) (err error) {
 	// If do not exists
-	_, err = FindManga(manga.Title)
+	_, err = FindManga(server, manga.Title)
 	if err != nil {
 		return
 	}
@@ -185,7 +190,7 @@ func UpdateManga(manga *web.Manga) (err error) {
 			panic(err)
 		}
 	}()
-	coll := client.Database(database).Collection(collection)
+	coll := client.Database(database).Collection(collections[server])
 
 	// Update total_chapters
 	filter := bson.D{{"title", manga.Title}}
@@ -209,7 +214,7 @@ func UpdateManga(manga *web.Manga) (err error) {
 }
 
 // Finds by the exactly given manga title on the database
-func FindManga(title string) (manga web.Manga, err error) {
+func FindManga(server int, title string) (manga web.Manga, err error) {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
 	if err != nil {
 		panic(err)
@@ -221,7 +226,7 @@ func FindManga(title string) (manga web.Manga, err error) {
 		}
 	}()
 
-	coll := client.Database(database).Collection(collection)
+	coll := client.Database(database).Collection(collections[server])
 	filter := bson.D{{"$text", bson.D{{"$search", title}}}}
 	var result bson.M
 	err = coll.FindOne(context.TODO(), filter).Decode(&result)

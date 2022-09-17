@@ -13,15 +13,15 @@ import (
 	"github.com/gotneb/manga_api/web"
 )
 
-var ErrMangaNotFound = errors.New("manga has't been found")
-var ErrDataNotCollected = errors.New("manga data has't been collected")
+var ErrMangaNotFound = errors.New("manga not found")
+var ErrDataNotCollected = errors.New("manga data data not collected")
 var ErrPageNotFound = errors.New("manga page not found")
-var ErrWebsiteWithoutContentData = errors.New("manga page null")
+var ErrSiteWithoutContentData = errors.New("manga page without content")
 var ErrFirstPageNotFound = errors.New("first page not found")
 
 type MeusMangas struct{}
 
-func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, err error) {
+func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCode int) {
 	c := colly.NewCollector()
 
 	var errorPage error = nil
@@ -30,9 +30,14 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, err error
 	page := 1
 
 	// Detect errors on page
-	c.OnError(func(_ *colly.Response, err error) {
+	c.OnError(func(r *colly.Response, err error) {
+		statusCode = r.StatusCode
 		errorPage = err
 		log.Println("Something went wrong:", err)
+	})
+	// Get response
+	c.OnResponse(func(r *colly.Response) {
+		statusCode = r.StatusCode
 	})
 	// Fetch manga sinopse
 	c.OnHTML("div.sinopse-page", func(e *colly.HTMLElement) {
@@ -112,9 +117,32 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, err error
 		panic(ErrDataNotCollected)
 	}
 	manga.TotalChapters = len(manga.Chapters)
-	return manga, errorPage
+	return
 }
 
 func (m *MeusMangas) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, err error) {
 	return web.FetchImagesByName(pathImages[MEUS_MANGAS], mangaTitle, chapter)
+}
+
+func (m *MeusMangas) FetchAllMangaByLetter(letter string) (links []string) {
+	link := "https://meusmangas.net/lista-de-mangas/" + letter
+	page := 1
+	c := colly.NewCollector()
+
+	// Fetch manga sinopse
+	c.OnHTML("ul.seriesList li", func(e *colly.HTMLElement) {
+		//fmt.Println(e.ChildAttr("a", "href"))
+		links = append(links, e.ChildAttr("a", "href"))
+	})
+	// Pass trough seciton page
+	c.OnHTML("ul.content-pagination li a", func(e *colly.HTMLElement) {
+		currPage, _ := strconv.Atoi(e.Text)
+		if currPage == page {
+			page++
+			c.Visit(e.Attr("href"))
+		}
+	})
+
+	c.Visit(link)
+	return
 }
