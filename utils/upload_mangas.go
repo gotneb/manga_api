@@ -13,30 +13,33 @@ import (
 func UploadAllMangasFrom(server int) {
 	switch server {
 	case db.MEUS_MANGAS:
-		uploadFromMeusMangas()
+		uploadMangas(db.MEUS_MANGAS)
 	case db.MANGAINN:
-		uploadFromMangainn()
+		uploadMangas(db.MANGAINN)
 	default:
 		panic(errors.New("server not found"))
 	}
 }
 
-func uploadFromMeusMangas() {
+func uploadMangas(serverCode int) {
 	alphabet := "abcdefghijklmnopqrstuvwxyz"
-	client := serv.GetClient(db.MEUS_MANGAS)
+	client := serv.GetClient(serverCode)
 
 	for _, letter := range alphabet {
 		links := client.FetchAllMangaByLetter(string(letter))
 		for _, link := range links {
 			manga, stt := client.GetMangaDetail(link)
 			if stt != http.StatusOK {
-				log.Fatalln("Status:", stt)
+				log.Println("Status:", stt)
+			} else {
+				/*
+					Weirdly "Mangainn" adds mangas without even chapters, only title
+					So, the above line guarantees that only mangas with chapters will be added
+				*/
+				if manga.TotalChapters > 2 && manga.Status != "Completed" {
+					db.AddManga(serverCode, &manga)
+				}
 			}
-			db.AddManga(db.MEUS_MANGAS, &manga)
 		}
 	}
-}
-
-func uploadFromMangainn() {
-
 }

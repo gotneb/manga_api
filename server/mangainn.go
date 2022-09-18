@@ -15,10 +15,7 @@ type Mangainn struct{}
 func (m *Mangainn) GetMangaDetail(mangaURL string) (manga web.Manga, statusCode int) {
 	c := colly.NewCollector()
 	index := 0
-	// Entering on a site
-	c.OnRequest(func(r *colly.Request) {
-		log.Println("Visiting:", r.URL)
-	})
+
 	// Detect errors on page
 	c.OnError(func(r *colly.Response, err error) {
 		log.Println("Something went wrong:", err)

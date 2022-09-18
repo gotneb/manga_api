@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 	"os"
 	"strconv"
@@ -33,11 +34,13 @@ func Init() {
 		name := c.Param("mangaName")
 		var manga web.Manga
 
-		if serv == server.MEUS_MANGAS {
-			manga, err = db.GetManga(name)
-		} else if serv == server.MUITO_MANGA {
-			x := &server.MuitoManga{}
-			manga, err = x.FindManga(name)
+		switch serv {
+		case db.MEUS_MANGAS:
+			manga, err = server.GetClient(db.MEUS_MANGAS).GetManga(name)
+		case db.MANGAINN:
+			manga, err = server.GetClient(db.MANGAINN).GetManga(name)
+		default:
+			err = errors.New("server not found")
 		}
 
 		if err != nil {
@@ -64,9 +67,14 @@ func Init() {
 		c.JSON(http.StatusOK, infoCh)
 	})
 
-	r.GET("/manga/search/:mangaName", func(c *gin.Context) {
+	r.GET("/:server/manga/search/:mangaName", func(c *gin.Context) {
+		serv, err := strconv.Atoi(c.Param("server"))
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+		}
+
 		name := c.Param("mangaName")
-		listMangas, err := db.SearchManga(name)
+		listMangas, err := db.SearchManga(serv, name)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
