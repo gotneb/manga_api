@@ -159,7 +159,13 @@ func SearchManga(server int, title string) (mangas []web.Manga, err error) {
 		panic(err)
 	}
 	filter := bson.D{{"$text", bson.D{{"$search", title}}}}
-	cursor, err := coll.Find(context.TODO(), filter)
+	sort := bson.D{{"score", bson.D{{"$meta", "textScore"}}}}
+	opts := options.Find().SetSort(sort)
+	cursor, err := coll.Find(context.TODO(), filter, opts)
+	if err != nil {
+		panic(err)
+	}
+
 	var results []bson.M
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		panic(err)
