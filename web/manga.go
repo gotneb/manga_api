@@ -60,6 +60,5 @@ func FormatedTitle(title string) string {
 			nameFormated = strings.ReplaceAll(nameFormated, string(symbol), "")
 		}
 	}
-
 	return nameFormated
 }

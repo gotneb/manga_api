@@ -65,36 +65,10 @@ func AddManga(server int, manga *web.Manga) {
 
 // Returns a specified manga with the given title. E.g: "vinland saga"
 func GetManga(server int, title string) (manga web.Manga, err error) {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
-	if err != nil {
-		panic(err)
+	mangas, err := SearchManga(server, title)
+	if len(mangas) >= 1 {
+		manga = mangas[0]
 	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			log.Println("Disconnected!")
-			panic(err)
-		}
-	}()
-
-	coll := client.Database(database).Collection(collections[server])
-
-	model := mongo.IndexModel{Keys: bson.D{{"title", "text"}}}
-	_, err = coll.Indexes().CreateOne(context.TODO(), model)
-	if err != nil {
-		return
-	}
-	filter := bson.D{{"$text", bson.D{{"$search", title}}}}
-	var result bson.M
-	err = coll.FindOne(context.TODO(), filter).Decode(&result)
-	if err != nil {
-		return
-	}
-
-	jsonData, err := json.MarshalIndent(result, "", "    ")
-	if err != nil {
-		return
-	}
-	json.Unmarshal(jsonData, &manga)
 	return
 }
 

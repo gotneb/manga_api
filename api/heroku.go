@@ -20,11 +20,6 @@ func Init() {
 		c.String(http.StatusOK, "Welcome to my api :] !")
 	})
 
-	// Some people can have trouble forgeting to include "server" option
-	r.GET("/manga/detail/:mangaName", func(c *gin.Context) {
-		c.String(http.StatusBadRequest, "Request should include server option")
-	})
-
 	r.GET("/:server/manga/detail/:mangaName", func(c *gin.Context) {
 		serv, err := strconv.Atoi(c.Param("server"))
 		if err != nil {
