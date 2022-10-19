@@ -31,7 +31,7 @@ Returns *many results* which matches with the name
 ```
 /manga/search/[manga name]
 ```
-https://mangahoot.herokuapp.com/manga/search/jojo
+example: https://mangahoot.herokuapp.com/0/manga/search/jojo
 
 ## :sparkles: Contact
 I'm looking for a job. Do you want hire-me? [My email](gabriel_origenstdb@gmail.com). 
