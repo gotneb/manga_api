@@ -54,7 +54,6 @@ func Init() {
 		name := c.Param("mangaName")
 		ch := c.Param("chapter")
 
-		//infoCh, err := web.FetchImagesByName(name, ch)
 		infoCh, err := server.GetClient(serv).GetMangaPages(name, ch)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
@@ -75,6 +74,22 @@ func Init() {
 		} else {
 			c.JSON(http.StatusOK, listMangas)
 		}
+	})
+
+	r.POST("/add/manga/:password", func(c *gin.Context) {
+		pass := c.Param("password")
+		if pass != db.PasswordUpload {
+			c.String(http.StatusBadRequest, "Password key to upload is wrong.")
+			return
+		}
+
+		var manga web.Manga
+		err := c.BindJSON(&manga)
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+		db.AddManga(2, &manga)
+		c.String(http.StatusOK, "Saved with sucess")
 	})
 
 	// Heroku

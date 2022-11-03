@@ -16,6 +16,7 @@ import (
 const (
 	MEUS_MANGAS = iota
 	MANGAINN
+	READM
 )
 
 var keyURI = os.Getenv("MONGODB_URI")
@@ -23,7 +24,9 @@ var database = os.Getenv("DATABASE")
 var collections = map[int]string{
 	MEUS_MANGAS: os.Getenv("MEUS_MANGAS_COLL"),
 	MANGAINN:    os.Getenv("MANGAINN_COLL"),
+	READM:       os.Getenv("READM_COLL"),
 }
+var PasswordUpload = os.Getenv("API_KEY")
 
 /*
 I know it's a bad practice "repeat yourself", but I was too tired so,
