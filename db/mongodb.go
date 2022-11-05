@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"os"
 
@@ -28,7 +29,11 @@ var collections = map[int]string{
 	MANGAINN:    os.Getenv("MANGAINN_COLL"),
 	READM:       os.Getenv("READM_COLL"),
 }
+
+// This key will be used when by me when upload manga data using another language or tool (such as Selenium)
 var PasswordUpload = os.Getenv("API_KEY")
+
+var ErrMangaNotFound = errors.New("manga not found")
 
 /*
 I know it's a bad practice "repeat yourself", but I was too tired so,
@@ -73,6 +78,8 @@ func GetManga(server int, title string) (manga web.Manga, err error) {
 	mangas, err := SearchManga(server, title)
 	if len(mangas) >= 1 {
 		manga = mangas[0]
+	} else {
+		err = ErrMangaNotFound
 	}
 	return
 }
@@ -148,6 +155,11 @@ func SearchManga(server int, title string) (mangas []web.Manga, err error) {
 	var results []bson.M
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		panic(err)
+	}
+
+	if len(results) == 0 {
+		err = ErrMangaNotFound
+		return
 	}
 
 	for i := range results {

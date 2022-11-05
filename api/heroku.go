@@ -69,7 +69,7 @@ func Init() {
 
 		name := c.Param("mangaName")
 		listMangas, err := db.SearchManga(serv, name)
-		if err != nil {
+		if err != nil || len(listMangas) == 0 {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
 			c.JSON(http.StatusOK, listMangas)
