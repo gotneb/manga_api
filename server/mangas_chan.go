@@ -17,6 +17,7 @@ func (m *MangasChan) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 
 	counter := 1
 	last := ""
+	isFirstParagraph := true
 
 	// Detect errors on page
 	c.OnError(func(r *colly.Response, err error) {
@@ -33,7 +34,12 @@ func (m *MangasChan) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	})
 	// Fetch manga summary
 	c.OnHTML("div.seriestuhead div.entry-content.entry-content-single p", func(e *colly.HTMLElement) {
-		manga.Summary = e.Text
+		if isFirstParagraph {
+			manga.Summary = e.Text
+			isFirstParagraph = !isFirstParagraph
+		} else {
+			manga.Summary += "\n\n" + e.Text
+		}
 	})
 	// Fetch manga genres
 	c.OnHTML("div.seriestucontr div.seriestugenre a", func(e *colly.HTMLElement) {
