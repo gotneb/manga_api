@@ -48,7 +48,7 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	})
 	// Fetch manga thumbnail
 	c.OnHTML("img.hGq41", func(e *colly.HTMLElement) {
-		if thumb := e.Attr("src"); collectData && len(thumb) > 1 {
+		if thumb := e.Attr("data-lazy-src"); collectData && len(thumb) > 1 {
 			manga.Thumbnail = thumb
 		}
 	})
@@ -126,7 +126,7 @@ func (m *MeusMangas) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, 
 }
 
 func (m *MeusMangas) FetchAllMangaByLetter(letter string) (links []string) {
-	link := "https://meusmangas.net/lista-de-mangas/" + letter
+	link := "https://mymangas.net/lista-de-mangas/" + letter
 	page := 1
 	c := colly.NewCollector()
 
