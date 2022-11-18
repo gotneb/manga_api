@@ -12,7 +12,7 @@ This project uses a web scrapping tool to get all manga data.
 
 | Server  |  Host  |  |
 | --- | --- | --- |
-|  0 |  https://meusmangas.net/ | :brazil: |
+|  0 |  https://mymangas.net/ | :brazil: |
 
 ## Manga Detail
 Returns *one single result* which matches with the name
