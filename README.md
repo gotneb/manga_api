@@ -4,7 +4,7 @@ A manga api written with Go using MongoDB :heart:
 ##  About  
 This project uses a web scrapping tool to get all manga data.
 
-:warning: you may face some problemns using it. It's done yet.
+:warning: you may face some problemns using it. It's not done yet.
 
 **API PATH** = [https://mangahoot.herokuapp.com/](https:/mangahoot.herokuapp.com/) 
 
