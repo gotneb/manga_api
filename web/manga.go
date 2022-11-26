@@ -6,19 +6,24 @@ import (
 )
 
 type Manga struct {
-	Title         string   `json:"title"`
-	Author        string   `json:"author"`
-	Thumbnail     string   `json:"thumbnail"`
-	Genres        []string `json:"genres"`
-	Summary       string   `json:"summary"`
-	Status        string   `json:"status"`
-	TotalChapters int      `json:"total_chapters"`
-	/*
-	 * Each chapter has the following format:
-	 * number: release_date (year-month-day)
-	 * e.g => 4: 2022-09-03 ; 150: 2016-12-25
-	 */
-	Chapters map[string]string `json:"chapters"`
+	Title         string          `json:"title"`
+	Author        string          `json:"author"`
+	Thumbnail     string          `json:"thumbnail"`
+	Genres        []string        `json:"genres"`
+	Summary       string          `json:"summary"`
+	Status        string          `json:"status"`
+	TotalChapters int             `json:"total_chapters"`
+	Chapters      []SimpleChapter `json:"chapters"`
+}
+
+/*
+ * Each simple chapter has the following format:
+ * value: release_date (year-month-day)
+ * e.g => 4: 2022-09-03 ; 150: 2016-12-25
+ */
+type SimpleChapter struct {
+	Value string `json:"value"`
+	Date  string `json:"date"`
 }
 
 type Chapter struct {
