@@ -30,6 +30,8 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	collectData := true
 	page := 1
 
+	chapters := make(map[string]string)
+
 	// Detect errors on page
 	c.OnError(func(r *colly.Response, err error) {
 		statusCode = r.StatusCode
@@ -90,14 +92,18 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	// Fetch chapters avaliable to read
 	c.OnHTML("a.link-dark", func(e *colly.HTMLElement) {
 		if len(e.Attr("title")) > 1 {
-			// e.Attr("") returns "ler capitulo N"
+			// e.Attr("title") returns "ler capitulo N"
 			chTitle := strings.Split(e.Attr("title"), " ")[2]
-			// For unknown reason, the chapter "0", isn't showed on the site
+			// For unknown reason, the chapter "0", isn't displayed on the site
 			if chTitle == "" {
 				chTitle = "0"
 			}
 			// ==============================================================
-			manga.Chapters = append(manga.Chapters, chTitle)
+			//manga.Chapters = append(manga.Chapters, chTitle)
+
+			// Get chapter date
+			date := e.ChildText("div.chapter-options span.chapter-date")
+			chapters[chTitle] = date
 		}
 	})
 	// Visit all manga pages
@@ -117,6 +123,7 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 		manga.Show()
 		panic(ErrDataNotCollected)
 	}
+	manga.Chapters = chapters
 	manga.TotalChapters = len(manga.Chapters)
 	return
 }

@@ -59,8 +59,8 @@ func (m *Mangainn) GetMangaDetail(mangaURL string) (manga web.Manga, statusCode 
 	})
 	// Fetch manga chapters
 	c.OnHTML("ul.chapter-list li a span.val", func(e *colly.HTMLElement) {
-		ch := strings.Split(strings.ReplaceAll(e.Text, " ", ""), "-")
-		manga.Chapters = append(manga.Chapters, ch[len(ch)-1])
+		//ch := strings.Split(strings.ReplaceAll(e.Text, " ", ""), "-")
+		//manga.Chapters = append(manga.Chapters, ch[len(ch)-1])
 	})
 
 	c.Visit(mangaURL)

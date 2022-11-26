@@ -21,13 +21,25 @@ const (
 	MANGAS_CHAN
 )
 
+// Options
+const (
+	ALL = iota
+	HIGHLIGHTS
+	POPULARS
+	RECENT_UPLOADS
+)
+
 var keyURI = os.Getenv("MONGODB_URI")
-var database = os.Getenv("DATABASE")
+
+var databases = map[int]string{
+	MEUS_MANGAS: os.Getenv("MEUS_MANGAS_DATABASE"),
+}
+
 var collections = map[int]string{
-	MEUS_MANGAS: os.Getenv("MEUS_MANGAS_COLL"),
-	MANGAS_CHAN: os.Getenv("MANGAS_CHAN_COLL"),
-	MANGAINN:    os.Getenv("MANGAINN_COLL"),
-	READM:       os.Getenv("READM_COLL"),
+	ALL:            os.Getenv("ALL_COLL"),
+	HIGHLIGHTS:     os.Getenv("HIGHLIGHTS_COLL"),
+	POPULARS:       os.Getenv("POPULARS_COLL"),
+	RECENT_UPLOADS: os.Getenv("RECENT_UPLOADS_COLL"),
 }
 
 // This key will be used when by me when upload manga data using another language or tool (such as Selenium)
@@ -52,7 +64,7 @@ func AddManga(server int, manga *web.Manga) {
 		}
 	}()
 
-	coll := client.Database(database).Collection(collections[server])
+	coll := client.Database(databases[server]).Collection(collections[ALL])
 	_, err = coll.InsertOne(
 		context.TODO(),
 		bson.D{
@@ -84,46 +96,6 @@ func GetManga(server int, title string) (manga web.Manga, err error) {
 	return
 }
 
-func AddChapter(ch *web.Chapter) {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
-
-	coll := client.Database(database).Collection("meus_mangas_chapters")
-	_, err = coll.InsertOne(
-		context.TODO(),
-		bson.D{
-			{"title", ch.Title},
-			{"value", ch.Value},
-			{"pages", ch.Pages},
-		},
-	)
-
-	if err != nil {
-		panic(err)
-	}
-	log.Println("OK: Added pages with sucess:", ch.Title)
-}
-
-/*
-// Returns a manga with given title and chapter number
-func SearchChapter(serv int, title, chNumber string) (web.Chapter, error) {
-	manga, err := GetManga(serv, title)
-	if err != nil {
-		return web.Chapter{}, err
-	}
-	c, _ := server.GetClient(server.MEUS_MANGAS).GetMangaPages(manga.Title, chNumber)
-	return c, nil
-}
-*/
-
 // Search all mangas with the given title
 func SearchManga(server int, title string) (mangas []web.Manga, err error) {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(keyURI))
@@ -137,7 +109,7 @@ func SearchManga(server int, title string) (mangas []web.Manga, err error) {
 		}
 	}()
 
-	coll := client.Database(database).Collection(collections[server])
+	coll := client.Database(databases[server]).Collection(collections[ALL])
 
 	model := mongo.IndexModel{Keys: bson.D{{"title", "text"}}}
 	_, err = coll.Indexes().CreateOne(context.TODO(), model)
@@ -192,7 +164,7 @@ func UpdateManga(server int, manga *web.Manga) (err error) {
 			panic(err)
 		}
 	}()
-	coll := client.Database(database).Collection(collections[server])
+	coll := client.Database(databases[server]).Collection(collections[ALL])
 
 	// Update total_chapters
 	filter := bson.D{{"title", manga.Title}}
@@ -228,7 +200,7 @@ func FindManga(server int, title string) (manga web.Manga, err error) {
 		}
 	}()
 
-	coll := client.Database(database).Collection(collections[server])
+	coll := client.Database(databases[server]).Collection(collections[ALL])
 	filter := bson.D{{"$text", bson.D{{"$search", title}}}}
 	var result bson.M
 	err = coll.FindOne(context.TODO(), filter).Decode(&result)

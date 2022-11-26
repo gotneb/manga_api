@@ -13,12 +13,17 @@ type Manga struct {
 	Summary       string   `json:"summary"`
 	Status        string   `json:"status"`
 	TotalChapters int      `json:"total_chapters"`
-	Chapters      []string `json:"chapters"`
+	/*
+	 * Each chapter has the following format:
+	 * number: release_date (year-month-day)
+	 * e.g => 4: 2022-09-03 ; 150: 2016-12-25
+	 */
+	Chapters map[string]string `json:"chapters"`
 }
 
 type Chapter struct {
 	Title string `json:"title"`
-	// It's supossed to be a float64, but rarely some chapters are found without a "floating point number"
+	// It's suposed to be a float64, but rarely some chapters are found without a "floating point number"
 	// eg.: Black Cover - 40v01 - o.o
 	Value      string   `json:"value"`
 	TotalPages int      `json:"total_pages"`

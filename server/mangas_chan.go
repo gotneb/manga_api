@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/gocolly/colly"
 	"github.com/gotneb/manga_api/db"
@@ -60,8 +59,8 @@ func (m *MangasChan) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	})
 	// Fetch manga chapters
 	c.OnHTML("div.bixbox.bxcl.epcheck div#chapterlist.eplister ul li div.chbox div.eph-num a span.chapternum", func(e *colly.HTMLElement) {
-		ch := strings.Split(e.Text, " ")[1]
-		manga.Chapters = append(manga.Chapters, ch)
+		//ch := strings.Split(e.Text, " ")[1]
+		//manga.Chapters = append(manga.Chapters, ch)
 	})
 
 	c.Visit(mangaURL)
