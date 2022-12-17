@@ -7,7 +7,7 @@ import (
 
 // The "GetMangaPages" method use these strings to request from server
 var pathImages = map[int]string{
-	db.MEUS_MANGAS: "https://img.mymangas.net/image",
+	db.MEUS_MANGAS: "https://img.seemangas.com/image",
 	db.MANGAS_CHAN: "https://img.mangaschan.com/uploads/manga-images/v",
 	db.MANGAINN:    "https://www.mangainn.net",
 }

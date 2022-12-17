@@ -5,9 +5,11 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/gocolly/colly"
 	"github.com/gotneb/manga_api/db"
@@ -85,6 +87,19 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 		if aut := e.Text; collectData && len(aut) > 1 {
 			manga.Author = e.Text[1:]
 			manga.Author = strings.TrimSpace(manga.Author)
+			// Sometimes author's name can be already formated. In this case it's ok return
+			if strings.Contains(manga.Author, " ") {
+				return
+			}
+			// Although it can happens: "NameSurname", I wanna this => "Name Surname"
+			for index, letter := range manga.Author {
+				if index > 0 {
+					if unicode.IsUpper(letter) {
+						manga.Author = fmt.Sprintf("%s %s", manga.Author[:index], manga.Author[index:])
+						return
+					}
+				}
+			}
 		}
 	})
 	// Fetch chapters avaliable to read
@@ -132,7 +147,7 @@ func (m *MeusMangas) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, 
 }
 
 func (m *MeusMangas) FetchAllMangaByLetter(letter string) (links []string) {
-	link := "https://mymangas.net/lista-de-mangas/" + letter
+	link := "https://seemangas.com/lista-de-mangas/" + letter
 	page := 1
 	c := colly.NewCollector()
 
