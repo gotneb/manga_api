@@ -42,11 +42,12 @@ var collections = map[int]string{
 	RECENT_UPLOADS: os.Getenv("RECENT_UPLOADS_COLL"),
 }
 
-// This key will be used when by me when upload manga data using another language or tool (such as Selenium)
+// This key will be used when by me when upload manga data using another language or tool (such as PYTHON[Selenium])
 var AuthUpload = os.Getenv("AUTH_KEY")
 
+// Errors
 var ErrMangaNotFound = errors.New("manga not found")
-var ErrUnauthorized = errors.New("You're not unauthorized to use this service.")
+var ErrUnauthorized = errors.New("you're not unauthorized to use this service")
 
 /*
 I know it's a bad practice "repeat yourself", but I was too tired so,

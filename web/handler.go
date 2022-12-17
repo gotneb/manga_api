@@ -29,13 +29,11 @@ func FetchImagesByName(hostImages, name, chapter string) (ch Chapter, err error)
 		Or even, weirdly it starts a page with "2" instead "1"
 	*/
 	findIndex := func(index int) (string, bool, int, error) {
-		resp, err := http.Get(fmt.Sprintf("%s/%s/%s/%d.jpg", hostImages, nameFormated, chapter, index))
+		resp, _ := http.Get(fmt.Sprintf("%s/%s/%s/%d.jpg", hostImages, nameFormated, chapter, index))
 		if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusPartialContent {
 			return "jpg", false, index, nil
 		}
-		if err != nil {
-			log.Println("ERROR FETCHING CHAPTER:", err)
-		}
+		log.Printf("\nSTATUS: %d\n", resp.StatusCode)
 		resp, _ = http.Get(fmt.Sprintf("%s/%s/%s/0%d.jpg", hostImages, nameFormated, chapter, index))
 		if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusPartialContent {
 			return "jpg", true, index, nil
