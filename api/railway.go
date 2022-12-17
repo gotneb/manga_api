@@ -52,7 +52,7 @@ func Init() {
 
 	r.GET("/:server/manga/pages/:mangaName/:chapter", func(c *gin.Context) {
 		serv, err := strconv.Atoi(c.Param("server"))
-		if err != nil {
+		if err != nil || serv != 0 {
 			c.String(http.StatusBadRequest, err.Error())
 		}
 
@@ -104,10 +104,13 @@ func Init() {
 	 *
 	 * The majority of sites they use AJAX to load content, with this aproach, I'm not able to
 	 * scrape data from them. In this case I can use another tool (Seleniun) to get data and send it for here.
-	 *
-	 * [WARNING]: You might expect try this endpoint... But "utils" need authenthication, so if you try, then you fail.
 	 */
-	r.POST("/add/release-mangas/", func(c *gin.Context) {
+	r.POST("/add/release-mangas/:auth", func(c *gin.Context) {
+		auth := c.Param("auth")
+		if auth != db.AuthUpload {
+			c.String(http.StatusForbidden, db.ErrUnauthorized.Error())
+			return
+		}
 		var data Releases
 		err := c.BindJSON(&data)
 

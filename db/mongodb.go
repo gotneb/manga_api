@@ -43,9 +43,10 @@ var collections = map[int]string{
 }
 
 // This key will be used when by me when upload manga data using another language or tool (such as Selenium)
-var PasswordUpload = os.Getenv("API_KEY")
+var AuthUpload = os.Getenv("AUTH_KEY")
 
 var ErrMangaNotFound = errors.New("manga not found")
+var ErrUnauthorized = errors.New("You're not unauthorized to use this service.")
 
 /*
 I know it's a bad practice "repeat yourself", but I was too tired so,
