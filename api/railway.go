@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -33,23 +32,23 @@ func Init() {
 		req, _ := http.NewRequest("GET", url, nil)
 
 		req.Header = http.Header{
-			"Accept":                    {"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"},
-			"Accept-Encoding":           {"gzip, deflate, br"},
-			"Accept-Language":           {"en-US,en;q=0.5"},
-			"Alt-Used":                  {"img.seemangas.com"},
-			"Connection":                {"keep-alive"},
-			"Host":                      {"img.seemangas.com"},
-			"If-Modified-Sincel":        {"Fri, 14 May 2021 00:02:36 GMT"},
-			"If-None-Match":             {"\"609dbe1c-a2568\""},
-			"Sec-Fetch-Dest":            {"document"},
-			"Sec-Fetch-Mode":            {"navigate"},
-			"Sec-Fetch-Site":            {"cross-site"},
-			"Upgrade-Insecure-Requests": {"1"},
-			"User-Agent":                {"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"},
+			"Accept":             {"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"},
+			"Accept-Encoding":    {"gzip, deflate, br"},
+			"Accept-Language":    {"en-US,en;q=0.5"},
+			"Alt-Used":           {"img.seemangas.com"},
+			"Connection":         {"keep-alive"},
+			"Host":               {"img.seemangas.com"},
+			"If-Modified-Sincel": {"Fri, 14 May 2021 00:02:36 GMT"},
+			//"If-None-Match":             {"\"609dbe1c-a2568\""},
+			"Sec-Fetch-Dest": {"document"},
+			"Sec-Fetch-Mode": {"navigate"},
+			"Sec-Fetch-Site": {"cross-site"},
+			//"Upgrade-Insecure-Requests": {"1"},
+			"User-Agent": {"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"},
 		}
 
 		resp, _ := client.Do(req)
-		log.Println("REQUEST", resp.StatusCode)
+		c.JSON(resp.StatusCode, "request")
 	})
 
 	r.GET("/:server/manga/detail/:mangaName", func(c *gin.Context) {
