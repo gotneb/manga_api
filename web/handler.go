@@ -33,6 +33,7 @@ func FetchImagesByName(hostImages, name, chapter string) (ch Chapter, err error)
 
 		client := &http.Client{}
 		req, _ := http.NewRequest("GET", url, nil)
+		req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
 		resp, _ := client.Do(req)
 
 		if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusPartialContent {
