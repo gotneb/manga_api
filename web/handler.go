@@ -33,7 +33,18 @@ func FetchImagesByName(hostImages, name, chapter string) (ch Chapter, err error)
 
 		client := &http.Client{}
 		req, _ := http.NewRequest("GET", url, nil)
-		req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+
+		req.Header = http.Header{
+			"User-Agent":      {"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"},
+			"Accept":          {"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"},
+			"Accept-Encoding": {"gzip, deflate, br"},
+			"Accept-Language": {"en-US,en;q=0.5"},
+			"Alt-Used":        {"img.seemangas.com"},
+			"Connection":      {"keep-alive"},
+			"Cache-Control":   {"no-cache"},
+			"Host":            {"img.seemangas.com"},
+		}
+
 		resp, _ := client.Do(req)
 
 		if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusPartialContent {
