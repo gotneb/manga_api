@@ -101,7 +101,9 @@ func FetchImagesByName(hostImages, name, chapter string) (ch Chapter, err error)
 	}
 	initialPage := i
 	// Find all manga pages
-	if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusPartialContent {
+	if resp.StatusCode == http.StatusOK ||
+		resp.StatusCode == http.StatusPartialContent ||
+		resp.StatusCode == http.StatusForbidden {
 		// If ok, visits the remain of pages
 		defer resp.Body.Close()
 		for {
