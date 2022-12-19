@@ -106,7 +106,7 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	c.OnHTML("a.link-dark", func(e *colly.HTMLElement) {
 		if len(e.Attr("title")) > 1 {
 			// Get chapter date
-			date := e.ChildText("div.chapter-options span.chapter-date")
+			//date := e.ChildText("div.chapter-options span.chapter-date")
 
 			// e.Attr("title") returns "ler capitulo N"
 			chTitle := strings.Split(e.Attr("title"), " ")[2]
@@ -116,8 +116,8 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 				chTitle = "0"
 			}
 
-			sc := web.SimpleChapter{Value: chTitle, Date: date}
-			manga.Chapters = append(manga.Chapters, sc)
+			//sc := web.SimpleChapter{Value: chTitle, Date: date}
+			//manga.Chapters = append(manga.Chapters, sc)
 		}
 	})
 	// Visit all manga pages

@@ -33,6 +33,7 @@ var keyURI = os.Getenv("MONGODB_URI")
 
 var databases = map[int]string{
 	MEUS_MANGAS: os.Getenv("MEUS_MANGAS_DATABASE"),
+	MANGAS_CHAN: os.Getenv("MANGAS_CHAN_DATABASE"),
 }
 
 var collections = map[int]string{

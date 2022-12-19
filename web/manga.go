@@ -6,14 +6,14 @@ import (
 )
 
 type Manga struct {
-	Title         string          `json:"title"`
-	Author        string          `json:"author"`
-	Thumbnail     string          `json:"thumbnail"`
-	Genres        []string        `json:"genres"`
-	Summary       string          `json:"summary"`
-	Status        string          `json:"status"`
-	TotalChapters int             `json:"total_chapters"`
-	Chapters      []SimpleChapter `json:"chapters"`
+	Title         string   `json:"title"`
+	Author        string   `json:"author"`
+	Thumbnail     string   `json:"thumbnail"`
+	Genres        []string `json:"genres"`
+	Summary       string   `json:"summary"`
+	Status        string   `json:"status"`
+	TotalChapters int      `json:"total_chapters"`
+	Chapters      []string `json:"chapters"`
 }
 
 /*
@@ -48,7 +48,7 @@ func (m *Manga) Show() {
 	}
 	fmt.Println()
 	fmt.Println("Description: " + m.Summary)
-	// TODO: Show all chapters
+	fmt.Println("Chapters:", m.Chapters)
 }
 
 // Returns if any field is empty

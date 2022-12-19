@@ -28,7 +28,7 @@ func UploadRecentMangasFrom(server int, links []string) {
 func getFromMeusMangas(recentLinks []string) {
 	stop := false
 
-	client := serv.GetClient(db.MEUS_MANGAS)
+	client := serv.Client(db.MEUS_MANGAS)
 	serverCode := db.MEUS_MANGAS
 
 	for !stop {

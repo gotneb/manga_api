@@ -36,9 +36,9 @@ func Init() {
 
 		switch serv {
 		case db.MEUS_MANGAS:
-			manga, err = server.GetClient(db.MEUS_MANGAS).GetManga(name)
+			manga, err = server.Client(db.MEUS_MANGAS).GetManga(name)
 		case db.MANGAINN:
-			manga, err = server.GetClient(db.MANGAINN).GetManga(name)
+			manga, err = server.Client(db.MANGAINN).GetManga(name)
 		default:
 			err = errors.New("server not found")
 		}
@@ -52,14 +52,14 @@ func Init() {
 
 	r.GET("/:server/manga/pages/:mangaName/:chapter", func(c *gin.Context) {
 		serv, err := strconv.Atoi(c.Param("server"))
-		if err != nil || serv != 0 {
+		if err != nil {
 			c.String(http.StatusBadRequest, err.Error())
 		}
 
 		name := c.Param("mangaName")
 		ch := c.Param("chapter")
 
-		infoCh, err := server.GetClient(serv).GetMangaPages(name, ch)
+		infoCh, err := server.Client(serv).GetMangaPages(name, ch)
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		}
