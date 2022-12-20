@@ -12,7 +12,8 @@ This project uses a web scrapping tool to get all manga data.
 
 | Server  |  Host  | Language |
 | --- | --- | --- |
-|  0 |  https://seemangas.com/ | :brazil: |
+| 0 | https://seemangas.com | :brazil: |
+| 3 | https://mangaschan.com | :brazil: |
 
 ## Manga Detail
 Returns *one single result* which matches with the name
@@ -21,11 +22,15 @@ Returns *one single result* which matches with the name
 ```
 example: https://mangahoot.onrender.com/0/manga/detail/berserk
 
+example: https://mangahoot.onrender.com/3/manga/detail/berserk
+
 ## Chapter Pages
 ```
 /[server]/manga/pages/[name of manga]/[chapter number]
 ```
 example: https://mangahoot.onrender.com/0/manga/pages/martial%20peak/500
+
+example: https://mangahoot.onrender.com/3/manga/pages/martial%20peak/500
 
 ## Search Manga
 Returns *many results* which matches with the name
@@ -33,3 +38,5 @@ Returns *many results* which matches with the name
 /[server]/manga/search/[manga name]
 ```
 example: https://mangahoot.onrender.com/0/manga/search/jojo
+
+example: https://mangahoot.onrender.com/3/manga/search/jojo
