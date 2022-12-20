@@ -36,9 +36,9 @@ func Init() {
 
 		switch serv {
 		case db.MEUS_MANGAS:
-			manga, err = server.Client(db.MEUS_MANGAS).GetManga(name)
 		case db.MANGAINN:
-			manga, err = server.Client(db.MANGAINN).GetManga(name)
+		case db.MANGAS_CHAN:
+			manga, err = server.Client(serv).GetManga(name)
 		default:
 			err = errors.New("server not found")
 		}
