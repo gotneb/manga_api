@@ -12,8 +12,8 @@ import (
 // UploadAllMangasFrom upload all mangas from specified server and stores into database.
 func UploadAllMangasFrom(server int) {
 	switch server {
-	case db.MEUS_MANGAS:
-		uploadMangas(db.MEUS_MANGAS)
+	case db.SEEMANGAS:
+		uploadMangas(db.SEEMANGAS)
 	case db.MANGAINN:
 		uploadMangas(db.MANGAINN)
 	case db.MANGAS_CHAN:

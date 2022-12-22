@@ -15,7 +15,7 @@ import (
 
 // It represents a site where manga data will be scraped, and also collections avaliable
 const (
-	MEUS_MANGAS = iota
+	SEEMANGAS = iota
 	MANGAINN
 	READM
 	MANGAS_CHAN
@@ -32,7 +32,7 @@ const (
 var keyURI = os.Getenv("MONGODB_URI")
 
 var databases = map[int]string{
-	MEUS_MANGAS: os.Getenv("MEUS_MANGAS_DATABASE"),
+	SEEMANGAS:   os.Getenv("SEEMANGAS_DATABASE"),
 	MANGAS_CHAN: os.Getenv("MANGAS_CHAN_DATABASE"),
 }
 
@@ -43,7 +43,7 @@ var collections = map[int]string{
 	RECENT_UPLOADS: os.Getenv("RECENT_UPLOADS_COLL"),
 }
 
-// This key will be used when by me when upload manga data using another language or tool (such as PYTHON[Selenium])
+// This key will be used by me when uploading manga data using another language or tool (such as Python[Selenium])
 var AuthUpload = os.Getenv("AUTH_KEY")
 
 // Errors

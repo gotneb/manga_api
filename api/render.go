@@ -35,9 +35,7 @@ func Init() {
 		var manga web.Manga
 
 		switch serv {
-		case db.MEUS_MANGAS:
-		case db.MANGAINN:
-		case db.MANGAS_CHAN:
+		case db.MANGAS_CHAN, db.SEEMANGAS:
 			manga, err = server.Client(serv).GetManga(name)
 		default:
 			err = errors.New("server not found")
@@ -72,12 +70,17 @@ func Init() {
 			c.String(http.StatusBadRequest, err.Error())
 		}
 
-		name := c.Param("mangaName")
-		listMangas, err := db.SearchManga(serv, name)
-		if err != nil || len(listMangas) == 0 {
-			c.String(http.StatusNotFound, err.Error())
-		} else {
-			c.JSON(http.StatusOK, listMangas)
+		switch serv {
+		case db.SEEMANGAS, db.MANGAS_CHAN:
+			name := c.Param("mangaName")
+			listMangas, err := db.SearchManga(serv, name)
+			if err != nil || len(listMangas) == 0 {
+				c.String(http.StatusNotFound, err.Error())
+			} else {
+				c.JSON(http.StatusOK, listMangas)
+			}
+		default:
+			c.String(http.StatusForbidden, db.ErrUnauthorized.Error())
 		}
 	})
 
@@ -119,7 +122,7 @@ func Init() {
 			return
 		}
 
-		utils.UploadRecentMangasFrom(db.MEUS_MANGAS, data.Links)
+		utils.UploadRecentMangasFrom(db.SEEMANGAS, data.Links)
 		c.String(http.StatusOK, "Saved with sucess")
 	})
 

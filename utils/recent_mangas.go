@@ -16,7 +16,7 @@ and stores it into the database.
 */
 func UploadRecentMangasFrom(server int, links []string) {
 	switch server {
-	case db.MEUS_MANGAS:
+	case db.SEEMANGAS:
 		getFromMeusMangas(links)
 	case db.MANGAINN:
 		getFromMangainn()
@@ -28,8 +28,8 @@ func UploadRecentMangasFrom(server int, links []string) {
 func getFromMeusMangas(recentLinks []string) {
 	stop := false
 
-	client := serv.Client(db.MEUS_MANGAS)
-	serverCode := db.MEUS_MANGAS
+	client := serv.Client(db.SEEMANGAS)
+	serverCode := db.SEEMANGAS
 
 	for !stop {
 		links := recentLinks

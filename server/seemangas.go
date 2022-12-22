@@ -105,9 +105,6 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 	// Fetch chapters avaliable to read
 	c.OnHTML("a.link-dark", func(e *colly.HTMLElement) {
 		if len(e.Attr("title")) > 1 {
-			// Get chapter date
-			//date := e.ChildText("div.chapter-options span.chapter-date")
-
 			// e.Attr("title") returns "ler capitulo N"
 			chTitle := strings.Split(e.Attr("title"), " ")[2]
 
@@ -115,9 +112,7 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 			if chTitle == "" {
 				chTitle = "0"
 			}
-
-			//sc := web.SimpleChapter{Value: chTitle, Date: date}
-			//manga.Chapters = append(manga.Chapters, sc)
+			manga.Chapters = append(manga.Chapters, chTitle)
 		}
 	})
 	// Visit all manga pages
@@ -143,7 +138,7 @@ func (m *MeusMangas) GetMangaDetail(mangaURL string) (manga web.Manga, statusCod
 }
 
 func (m *MeusMangas) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, err error) {
-	return web.FetchImagesByName(pathImages[db.MEUS_MANGAS], mangaTitle, chapter)
+	return web.FetchImagesByName(pathImages[db.SEEMANGAS], mangaTitle, chapter)
 }
 
 func (m *MeusMangas) FetchAllMangaByLetter(letter string) (links []string) {
@@ -170,5 +165,5 @@ func (m *MeusMangas) FetchAllMangaByLetter(letter string) (links []string) {
 }
 
 func (m *MeusMangas) GetManga(mangaTitle string) (manga web.Manga, err error) {
-	return db.GetManga(db.MEUS_MANGAS, mangaTitle)
+	return db.GetManga(db.SEEMANGAS, mangaTitle)
 }

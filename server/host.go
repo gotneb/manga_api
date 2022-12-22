@@ -7,7 +7,7 @@ import (
 
 // The "GetMangaPages" method use these strings to request from server
 var pathImages = map[int]string{
-	db.MEUS_MANGAS: "https://img.seemangas.com/image",
+	db.SEEMANGAS:   "https://img.seemangas.com/image",
 	db.MANGAS_CHAN: "https://img.mangaschan.com/uploads/manga-images",
 	db.MANGAINN:    "https://www.mangainn.net",
 }
@@ -33,7 +33,7 @@ type Host interface {
 // Client returns the site representation where users will be able to request data
 func Client(server int) Host {
 	switch server {
-	case db.MEUS_MANGAS:
+	case db.SEEMANGAS:
 		return meusMangas
 	case db.MANGAS_CHAN:
 		return mangasChan
