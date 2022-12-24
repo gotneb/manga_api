@@ -16,23 +16,20 @@ and stores it into the database.
 */
 func UploadRecentMangasFrom(server int, links []string) {
 	switch server {
-	case db.SEEMANGAS:
-		getFromMeusMangas(links)
-	case db.MANGAINN:
-		getFromMangainn()
+	case db.SEEMANGAS, db.MANGAINN:
+		addLatests(server, links)
 	default:
 		panic(errors.New("server not found"))
 	}
 }
 
-func getFromMeusMangas(recentLinks []string) {
+func addLatests(serverCode int, latestLinks []string) {
 	stop := false
 
-	client := serv.Client(db.SEEMANGAS)
-	serverCode := db.SEEMANGAS
+	client := serv.Client(serverCode)
 
 	for !stop {
-		links := recentLinks
+		links := latestLinks
 		for _, link := range links {
 			manga, stt := client.GetMangaDetail(link)
 			if stt != http.StatusOK {
@@ -59,34 +56,3 @@ func getFromMeusMangas(recentLinks []string) {
 		}
 	}
 }
-
-func getFromMangainn() {
-
-}
-
-/*
- * Get all recent mangas from "mymangas.net"
- * WARNING: Because the "mymangas.net" currently it's loading recent from AJAX
- * go.Colly is no longer avaliable to do this task
- * So... It'll be REPLACED!
-func getRecentUpdates(page int) (links []string) {
-	c := colly.NewCollector()
-	link := fmt.Sprintf("https://meusmangas.net/comienzo/page/%d", page)
-
-	c.OnRequest(func(r *colly.Request) {
-		log.Println("Visiting:", r.URL)
-	})
-	c.OnError(func(_ *colly.Response, err error) {
-		log.Println("Something went wrong:", err)
-	})
-	c.OnHTML("div#recent_releases  li.item_news-manga a.pull-left", func(e *colly.HTMLElement) {
-		link := "https://meusmangas.net" + e.Attr("href")
-		links = append(links, link)
-		log.Println(link)
-	})
-
-	c.Visit(link)
-
-	return
-}
-*/

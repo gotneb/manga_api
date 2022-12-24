@@ -85,45 +85,63 @@ func Init() {
 	})
 
 	/*
-		r.POST("/add/manga/:password", func(c *gin.Context) {
-			pass := c.Param("password")
-			if pass != db.PasswordUpload {
-				c.String(http.StatusBadRequest, "Password key to upload is wrong.")
-				return
-			}
+	 * BELOW THERE ARE ONLY ENDPOINTS THAT IS GOING TO BE USED BY ME
+	 * SO, DON'T CARE ABOUT THEM ;)
+	 */
 
-			var manga web.Manga
-			err := c.BindJSON(&manga)
-			if err != nil {
-				c.String(http.StatusBadGateway, err.Error())
-			}
-			db.AddManga(2, &manga)
-			c.String(http.StatusOK, "Saved with sucess")
-		})
-	*/
+	// This endpoint will upload all mangas avaliable on specified `server`
+	r.GET("/:server/backup/:auth", func(c *gin.Context) {
+		// Authenthication
+		auth := c.Param("auth")
+		if auth != db.AuthUpload {
+			c.String(http.StatusBadRequest, "Password key to upload is wrong.")
+			return
+		}
+		// Get server
+		serv, err := strconv.Atoi(c.Param("server"))
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+		}
+		// Upload
+		utils.UploadAllMangasFrom(serv)
+	})
 
 	/*
 	 * TLDR; Don't worry about this, it's an endpoint where only I can use :).
 	 *
+	 * I know it's pretty bad passing auth's key into url... I'll fix it later.
+	 *
 	 * The majority of sites they use AJAX to load content, with this aproach, I'm not able to
 	 * scrape data from them. In this case I can use another tool (Seleniun) to get data and send it for here.
+	 * e.g: READM.ORG
 	 */
-	r.POST("/add/release-mangas/:auth", func(c *gin.Context) {
+	r.POST("/:server/add/recent-mangas/:auth", func(c *gin.Context) {
+		// Check credentials
 		auth := c.Param("auth")
 		if auth != db.AuthUpload {
 			c.String(http.StatusForbidden, db.ErrUnauthorized.Error())
 			return
 		}
+		// Get server
+		serv, err := strconv.Atoi(c.Param("server"))
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+		}
+		// Bind link to manga
 		var data Releases
-		err := c.BindJSON(&data)
-
+		err = c.BindJSON(&data)
 		if err != nil {
 			c.String(http.StatusBadGateway, err.Error())
 			return
 		}
-
-		utils.UploadRecentMangasFrom(db.SEEMANGAS, data.Links)
-		c.String(http.StatusOK, "Saved with sucess")
+		// Upload to specified server
+		switch serv {
+		case db.MANGAINN:
+			utils.UploadRecentMangasFrom(db.MANGAINN, data.Links)
+			c.String(http.StatusOK, "Saved with sucess")
+		default:
+			c.String(http.StatusBadRequest, "Server not found")
+		}
 	})
 
 	// Listen to port

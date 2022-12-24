@@ -35,6 +35,8 @@ func Client(server int) Host {
 	switch server {
 	case db.SEEMANGAS:
 		return meusMangas
+	case db.MANGAINN:
+		return mangainn
 	case db.MANGAS_CHAN:
 		return mangasChan
 	default:

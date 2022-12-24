@@ -12,12 +12,8 @@ import (
 // UploadAllMangasFrom upload all mangas from specified server and stores into database.
 func UploadAllMangasFrom(server int) {
 	switch server {
-	case db.SEEMANGAS:
-		uploadMangas(db.SEEMANGAS)
-	case db.MANGAINN:
-		uploadMangas(db.MANGAINN)
-	case db.MANGAS_CHAN:
-		uploadMangas(db.MANGAS_CHAN)
+	case db.SEEMANGAS, db.MANGAINN, db.MANGAS_CHAN:
+		uploadMangas(server)
 	default:
 		panic(errors.New("server not found"))
 	}

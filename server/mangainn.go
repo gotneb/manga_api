@@ -59,8 +59,8 @@ func (m *Mangainn) GetMangaDetail(mangaURL string) (manga web.Manga, statusCode 
 	})
 	// Fetch manga chapters
 	c.OnHTML("ul.chapter-list li a span.val", func(e *colly.HTMLElement) {
-		//ch := strings.Split(strings.ReplaceAll(e.Text, " ", ""), "-")
-		//manga.Chapters = append(manga.Chapters, ch[len(ch)-1])
+		ch := strings.Split(strings.ReplaceAll(e.Text, " ", ""), "-")
+		manga.Chapters = append(manga.Chapters, ch[len(ch)-1])
 	})
 
 	c.Visit(mangaURL)
@@ -69,8 +69,8 @@ func (m *Mangainn) GetMangaDetail(mangaURL string) (manga web.Manga, statusCode 
 }
 
 func (m *Mangainn) GetMangaPages(mangaTitle, chapter string) (ch web.Chapter, err error) {
-	// Because this site alraedy give the total of pages, I can get all of them without
-	// using this slow function: return web.FetchImagesByName(pathImages[MANGAINN], mangaTitle, chapter)
+	// Because this site already give the total of pages, I can get all of them without
+	// using this slow function: web.FetchImagesByName(param...)
 	c := colly.NewCollector()
 	path := pathImages[db.MANGAINN]
 	fmtTitle := web.FormatedTitle(mangaTitle)

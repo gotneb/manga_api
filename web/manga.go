@@ -42,11 +42,7 @@ func (m *Manga) Show() {
 	fmt.Printf("Status: %s\n", m.Status)
 	fmt.Printf("Total chapters: %d\n", m.TotalChapters)
 	fmt.Println("Thumbnail: " + m.Thumbnail)
-	fmt.Printf("Tags: ")
-	for _, v := range m.Genres {
-		fmt.Printf("%s, ", v)
-	}
-	fmt.Println()
+	fmt.Println("Tags:", m.Genres)
 	fmt.Println("Description: " + m.Summary)
 	fmt.Println("Chapters:", m.Chapters)
 }
