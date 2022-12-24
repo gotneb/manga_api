@@ -24,14 +24,6 @@ example: https://mangahoot.onrender.com/0/manga/detail/berserk
 
 example: https://mangahoot.onrender.com/3/manga/detail/berserk
 
-## Chapter Pages
-```
-/[server]/manga/pages/[name of manga]/[chapter number]
-```
-example: https://mangahoot.onrender.com/0/manga/pages/martial%20peak/500
-
-example: https://mangahoot.onrender.com/3/manga/pages/martial%20peak/500
-
 ## Search Manga
 Returns *many results* which matches with the name
 ```
@@ -40,3 +32,8 @@ Returns *many results* which matches with the name
 example: https://mangahoot.onrender.com/0/manga/search/jojo
 
 example: https://mangahoot.onrender.com/3/manga/search/jojo
+
+## TODO
+- [ ] Fetch manga pages 
+- [ ] Fetch manga by genre
+- [ ] Get populars mangas
