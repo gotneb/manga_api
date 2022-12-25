@@ -40,4 +40,6 @@ func uploadMangas(serverCode int) {
 			}
 		}
 	}
+
+	log.Println("Done")
 }

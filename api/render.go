@@ -35,7 +35,7 @@ func Init() {
 		var manga web.Manga
 
 		switch serv {
-		case db.MANGAS_CHAN, db.SEEMANGAS:
+		case db.SEEMANGAS, db.MANGAINN, db.MANGAS_CHAN:
 			manga, err = server.Client(serv).GetManga(name)
 		default:
 			err = errors.New("server not found")
@@ -90,7 +90,7 @@ func Init() {
 	 */
 
 	// This endpoint will upload all mangas avaliable on specified `server`
-	r.GET("/:server/backup/:auth", func(c *gin.Context) {
+	r.PUT("/:server/backup/:auth", func(c *gin.Context) {
 		// Authenthication
 		auth := c.Param("auth")
 		if auth != db.AuthUpload {
