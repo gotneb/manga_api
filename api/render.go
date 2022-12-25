@@ -71,7 +71,7 @@ func Init() {
 		}
 
 		switch serv {
-		case db.SEEMANGAS, db.MANGAS_CHAN:
+		case db.SEEMANGAS, db.MANGAINN, db.MANGAS_CHAN:
 			name := c.Param("mangaName")
 			listMangas, err := db.SearchManga(serv, name)
 			if err != nil || len(listMangas) == 0 {
