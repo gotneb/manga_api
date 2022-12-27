@@ -21,11 +21,7 @@ Returns *one single result* which matches with the name
 ```
 /[server]/manga/detail/[manga name]
 ```
-example: https://mangahoot.onrender.com/0/manga/detail/berserk
-
 example: https://mangahoot.onrender.com/1/manga/detail/berserk
-
-example: https://mangahoot.onrender.com/3/manga/detail/berserk
 
 ## Manga Pages
 Returns all pages related to *manga name* on specified *chapter*
@@ -41,13 +37,55 @@ Returns *many results* which matches with the name
 ```
 /[server]/manga/search/[manga name]
 ```
-example: https://mangahoot.onrender.com/0/manga/search/jojo
-
 example: https://mangahoot.onrender.com/1/manga/search/jojo
-
-example: https://mangahoot.onrender.com/3/manga/search/jojo
 
 ## TODO
 - [ ] Fetch manga pages 
 - [ ] Fetch manga by genre
 - [ ] Get populars mangas
+
+# Golang Side
+If you're interested about how to use it on Go, this is how:
+
+```
+
+import (
+	"log"
+	"net/http"
+
+	"github.com/gotneb/manga_api/db"
+	"github.com/gotneb/manga_api/server"
+)
+
+func getMangaDetail(url string) {
+	/*
+	 * First you will have to identify which server you are going to get data from
+	 * In 2022-12-27, there are 3 clients avaliable:
+	 * Mangainn(en), MangasChan(pt-br), Seemangas(pt-br)
+	 *
+	 * Let's choose Mangainn:
+	 */
+	client := server.Client(db.MANGAINN)
+
+	/*
+	 * The 'url' param must be the adress of somewhere where scrapper can get:
+	 * title, author, status, description etc...
+	 * Like that:
+	 * - https://www.mangainn.net/chainsaw-man
+	 * - https://seemangas.com/manga/one-piece-my9771
+	 * - https://mangaschan.com/manga/god-of-martial-arts/
+	 */
+	manga, status := client.GetMangaDetail(url)
+
+	/*
+	 * Finally when you go get details from a manga, the above method will give you the
+	 * data requested and the status (a http status)
+	 * Sometimes can occur that web-scrapping tool failing to get data
+	 */
+	if status != http.StatusOK {
+		log.Fatalln("An unexpected error has ocurred on getting data...")
+	}
+	manga.Show()
+}
+
+```
