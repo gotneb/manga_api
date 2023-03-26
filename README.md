@@ -22,6 +22,8 @@ example: https://mangahoot.onrender.com/1/manga/detail/berserk
 ## Manga Pages
 Returns all pages related to *manga name* on specified *chapter*
 
+:warning: Recently **mangainn** went down. So it isn't working for a while.
+
 ```
 /[server]/manga/pages/[manga name]/[chapter]
 ```
