@@ -10,7 +10,7 @@ This project uses a web scrapping tool to get all manga data.
 
 | Server  |  Host  | Language |
 | --- | --- | --- |
-| 1 | https://www.mangainn.net/ | :us_outlying_islands: |
+| 1 | https://www.mangainn.net | :us_outlying_islands: |
 
 ## Manga Detail
 Returns *one single result* which matches with the name
