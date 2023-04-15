@@ -41,9 +41,12 @@ func (m *Mangainn) GetMangaDetail(mangaURL string) (manga web.Manga, statusCode 
 		case 1:
 			manga.Status = e.Text
 		case 2:
-			tagsText := strings.TrimSpace(strings.ReplaceAll(e.Text, " ", ""))
-			genres := strings.Split(tagsText, ",")
-			manga.Genres = genres
+			tagsText := strings.TrimSpace(e.Text)
+			tags := strings.Split(tagsText, ",")
+
+			for _, tag := range tags {
+				manga.Genres = append(manga.Genres, strings.TrimSpace(tag))
+			}
 		case 4:
 			manga.Author = strings.TrimSpace(e.Text)
 		}
